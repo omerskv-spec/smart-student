@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --purple: #5B4FCF;
+    --purple-light: #EAE8FC;
+    --purple-dark: #3B32A0;
+    --purple-mid: #7B6FE0;
+    --green: #1D9E75;
+    --bg: #F7F6FF;
+    --white: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6B6894;
+    --border: rgba(91,79,207,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--purple);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .logo-text span { color: var(--purple); }
+
+  .header-badge {
+    background: var(--purple-light);
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── Layout ── */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    height: calc(100vh - 69px);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+  }
+
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 8px;
+    margin-top: 8px;
+  }
+
+  .sidebar-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    text-align: right;
+    width: 100%;
+    transition: all 0.15s;
+  }
+
+  .sidebar-btn:hover { background: var(--purple-light); color: var(--purple); }
+  .sidebar-btn.active { background: var(--purple-light); color: var(--purple); font-weight: 500; }
+
+  .sidebar-btn .icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-btn.active .icon { background: white; }
+
+  .new-chat-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px;
+    background: var(--purple);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 8px;
+  }
+
+  .new-chat-btn:hover { background: var(--purple-dark); }
+
+  /* ── Chat area ── */
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chat-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .online-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  /* Welcome state */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 24px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .welcome-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--purple-light);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+  }
+
+  .welcome h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .welcome p {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 360px;
+    line-height: 1.7;
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .quick-btn {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Heebo', sans-serif;
+  }
+
+  .quick-btn:hover {
+    border-color: var(--purple);
+    background: var(--purple-light);
+  }
+
+  .quick-btn .q-icon { font-size: 20px; margin-bottom: 6px; display: block; }
+  .quick-btn .q-text { font-size: 13px; font-weight: 500; color: var(--text); display: block; }
+  .quick-btn .q-sub { font-size: 12px; color: var(--text-muted); display: block; margin-top: 2px; }
+
+  /* Messages */
+  .msg {
+    display: flex;
+    gap: 12px;
+    max-width: 75%;
+    animation: fadeUp 0.25s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .msg.user .msg-avatar {
+    background: var(--purple);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 100%;
+  }
+
+  .msg.bot .bubble {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px 18px 18px 18px;
+    color: var(--text);
+  }
+
+  .msg.user .bubble {
+    background: var(--purple);
+    color: white;
+    border-radius: 18px 4px 18px 18px;
+  }
+
+  .typing-bubble {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px 18px 18px 18px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .typing-bubble span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: blink 1.3s infinite;
+  }
+
+  .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink {
+    0%,80%,100% { opacity: 0.3; transform: scale(0.85); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── Input bar ── */
+  .input-area {
+    padding: 16px 24px 20px;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+  }
+
+  .input-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 14px;
+    transition: border-color 0.15s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--purple);
+    background: white;
+  }
+
+  .input-wrap textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    max-height: 120px;
+    min-height: 24px;
+    line-height: 1.6;
+    direction: rtl;
+  }
+
+  .input-wrap textarea::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--purple);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .send-btn:hover { background: var(--purple-dark); }
+  .send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* ── API key modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.4);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 420px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(91,79,207,0.15);
+  }
+
+  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+
+  .modal input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Heebo', sans-serif;
+    outline: none;
+    direction: ltr;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .modal input:focus { border-color: var(--purple); }
+
+  .modal-actions { display: flex; gap: 10px; }
+
+  .btn-primary {
+    flex: 1;
+    padding: 11px;
+    background: var(--purple);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+  }
+
+  .btn-secondary {
+    padding: 11px 18px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Heebo', sans-serif;
+    cursor: pointer;
+  }
+
+  /* ── Login screen ── */
+  .login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    width: 400px;
+    max-width: 90vw;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .login-logo {
+    width: 64px;
+    height: 64px;
+    background: var(--purple);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .login-card h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .login-card h1 span { color: var(--purple); }
+
+  .login-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 280px;
+  }
+
+  .google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Heebo', sans-serif;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+
+  .google-btn:hover {
+    border-color: var(--purple);
+    background: var(--purple-light);
+  }
+
+  .google-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .login-footer {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 280px;
+  }
+
+  /* ── User info in header ── */
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--purple-light);
+  }
+
+  .user-avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple);
+  }
+
+  .user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .logout-btn {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: 'Heebo', sans-serif;
+  }
+
+  .logout-btn:hover { background: var(--bg); color: var(--text); }
+
+  /* scrollbar */
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 640px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .quick-actions { grid-template-columns: 1fr; }
+    .msg { max-width: 90%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">★</div>
+    <h1>Smart <span>Student</span></h1>
+    <p>עוזר הלימודים החכם שלך — מחובר לכל המערכות, עונה על הכל בעברית.</p>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      התחבר עם Google
+    </button>
+    <p class="login-footer">ההתחברות מאובטחת דרך Google. אנחנו ניגשים רק לנתוני Google Classroom שלך.</p>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <a class="logo" href="#">
+    <div class="logo-icon">★</div>
+    <span class="logo-text">Smart <span>Student</span></span>
+  </a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="header-badge" onclick="openModal()" style="border:none;cursor:pointer;">הגדר API Key</button>
+    <div class="user-info" id="user-info" style="display:none;">
+      <div class="user-avatar-placeholder" id="user-avatar-placeholder"></div>
+      <img class="user-avatar" id="user-avatar-img" style="display:none;" />
+      <span class="user-name" id="user-name"></span>
+      <button class="logout-btn" onclick="signOut()">יציאה</button>
+    </div>
+  </div>
+</header>
+
+<!-- Main layout -->
+<div class="main">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <button class="new-chat-btn" onclick="newChat()">
+      <span style="font-size:16px;">+</span> שיחה חדשה
+    </button>
+
+    <div class="sidebar-label">קיצורי דרך</div>
+
+    <button class="sidebar-btn active" onclick="sendQuick('מה יש לי להגיש השבוע?')">
+      <span class="icon">📋</span> מה יש לי השבוע?
+    </button>
+    <button class="sidebar-btn" onclick="sendQuick('תסביר לי את החומר לקראת המבחן')">
+      <span class="icon">📖</span> הכנה למבחן
+    </button>
+    <button class="sidebar-btn" onclick="sendQuick('תעזור לי עם שיעורי הבית שלי')">
+      <span class="icon">✏️</span> שיעורי בית
+    </button>
+    <button class="sidebar-btn" onclick="sendQuick('מה מערכת השעות שלי מחר?')">
+      <span class="icon">🗓️</span> מערכת שעות
+    </button>
+
+    <div class="sidebar-label" style="margin-top:auto;">מקצועות</div>
+    <button class="sidebar-btn" onclick="sendQuick('תעזור לי במתמטיקה')">
+      <span class="icon">📐</span> מתמטיקה
+    </button>
+    <button class="sidebar-btn" onclick="sendQuick('תעזור לי באנגלית')">
+      <span class="icon">🔤</span> אנגלית
+    </button>
+    <button class="sidebar-btn" onclick="sendQuick('תעזור לי בתנ\"ך')">
+      <span class="icon">📜</span> תנ"ך
+    </button>
+  </aside>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <span class="chat-title">עוזר לימודי אישי</span>
+      <span class="online-badge"><span class="dot"></span> פעיל</span>
+    </div>
+
+    <div class="messages" id="messages">
+      <!-- Welcome screen -->
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">★</div>
+        <h2>שלום! אני Smart Student</h2>
+        <p>עוזר הלימודים החכם שלך — שואל, מסביר, ועוזר לך להתארגן. במה אתחיל לעזור לך?</p>
+        <div class="quick-actions">
+          <button class="quick-btn" onclick="sendQuick('מה יש לי להגיש השבוע?')">
+            <span class="q-icon">📋</span>
+            <span class="q-text">מה יש לי השבוע?</span>
+            <span class="q-sub">משימות והגשות</span>
+          </button>
+          <button class="quick-btn" onclick="sendQuick('לא הבנתי את החומר בשיעור, תסביר לי')">
+            <span class="q-icon">💡</span>
+            <span class="q-text">לא הבנתי משהו</span>
+            <span class="q-sub">הסבר חומר לימוד</span>
+          </button>
+          <button class="quick-btn" onclick="sendQuick('תעזור לי עם שיעורי הבית שלי')">
+            <span class="q-icon">✏️</span>
+            <span class="q-text">שיעורי בית</span>
+            <span class="q-sub">עזרה בתרגילים</span>
+          </button>
+          <button class="quick-btn" onclick="sendQuick('מתי המבחן הבא שלי ואיך אני מתכונן?')">
+            <span class="q-icon">🎯</span>
+            <span class="q-text">הכנה למבחן</span>
+            <span class="q-sub">תכנון חזרה</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <button class="send-btn" id="send-btn" onclick="handleSend()" disabled>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M14 8L2 2l3 6-3 6 12-6z" fill="white"/>
+          </svg>
+        </button>
+        <textarea
+          id="input"
+          placeholder="שאל אותי כל דבר על הלימודים שלך..."
+          rows="1"
+          oninput="autoResize(this); document.getElementById('send-btn').disabled=!this.value.trim();"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleSend();}">
+        </textarea>
+      </div>
+      <div class="input-hint">Enter לשליחה · Shift+Enter לשורה חדשה</div>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>🔑 הגדרת API Key</h3>
+    <p>כדי שה-Smart Student יעבוד, צריך להכניס Anthropic API Key. המפתח נשמר רק בדפדפן שלך ולא נשלח לשום שרת.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveKey()">שמור ופתח</button>
+      <button class="btn-secondary" onclick="closeModal()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GOOGLE_CLIENT_ID = '428521695237-1cl9iiddmvko6sp1jmjfnsehasifbhgn.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.coursework.me.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+
+let apiKey = localStorage.getItem('ss_api_key') || '';
+let googleToken = null;
+let currentUser = null;
+const history = [];
+
+const SYSTEM = `אתה Smart Student — עוזר לימודי חכם לתלמידי חטיבה ותיכון בישראל.
+אתה עונה תמיד בעברית, בשפה נגישה לגיל 12-18. תמיד תהיה חברותי, סבלני, ומעודד.
+אתה עוזר עם: שיעורי בית, הסברי חומר, ארגון מטלות, הכנה למבחנים.
+אם יש נתוני Classroom של המשתמש בהיסטוריה — השתמש בהם לתשובות מדויקות.
+תשובות קצרות וממוקדות — לא יותר מ-4 משפטים אלא אם ביקשו הסבר מפורט.`;
+
+// ── Google OAuth ─────────────────────────────────────────────────────────────
+function signInWithGoogle() {
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: SCOPES,
+    use_fedcm_for_prompt: false,
+    callback: async (response) => {
+      if (response.error) { alert('שגיאה בהתחברות: ' + response.error); return; }
+      googleToken = response.access_token;
+      await fetchUserProfile();
+      await fetchClassroomData();
+      showApp();
+    }
+  });
+  client.requestAccessToken({ prompt: 'consent' });
+}
+
+async function fetchUserProfile() {
+  const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: 'Bearer ' + googleToken }
+  });
+  const data = await res.json();
+  currentUser = data;
+  document.getElementById('user-name').textContent = data.given_name || data.name || '';
+  const placeholder = document.getElementById('user-avatar-placeholder');
+  const imgEl = document.getElementById('user-avatar-img');
+  if (data.picture) {
+    imgEl.src = data.picture;
+    imgEl.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    placeholder.textContent = (data.given_name || data.name || 'א')[0];
+    placeholder.style.display = 'flex';
+  }
+  document.getElementById('user-info').style.display = 'flex';
+}
+
+async function fetchClassroomData() {
+  try {
+    const coursesRes = await fetch('https://classroom.googleapis.com/v1/courses?courseStates=ACTIVE', {
+      headers: { Authorization: 'Bearer ' + googleToken }
+    });
+    const coursesData = await coursesRes.json();
+    const courses = coursesData.courses || [];
+
+    let summary = `נתוני Google Classroom של ${currentUser?.name || 'התלמיד'}:\n`;
+    summary += `קורסים פעילים: ${courses.map(c => c.name).join(', ') || 'אין'}\n\n`;
+
+    for (const course of courses.slice(0, 5)) {
+      try {
+        const workRes = await fetch(
+          `https://classroom.googleapis.com/v1/courses/${course.id}/courseWork?orderBy=dueDate%20desc&pageSize=5`,
+          { headers: { Authorization: 'Bearer ' + googleToken } }
+        );
+        const workData = await workRes.json();
+        const works = workData.courseWork || [];
+        if (works.length > 0) {
+          summary += `${course.name}:\n`;
+          works.forEach(w => {
+            const due = w.dueDate ? `(מועד: ${w.dueDate.day}/${w.dueDate.month})` : '';
+            summary += `  - ${w.title} ${due}\n`;
+          });
+          summary += '\n';
+        }
+      } catch(e) {}
+    }
+
+    history.push({
+      role: 'user',
+      content: `[נתוני Classroom שלי]\n${summary}\nאנא קח בחשבון נתונים אלה בכל תשובה.`
+    });
+    history.push({
+      role: 'assistant',
+      content: `הבנתי! טענתי את נתוני ה-Classroom שלך. אני מוכן לעזור!`
+    });
+  } catch(e) {
+    console.log('Classroom fetch error:', e);
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  if (!apiKey) setTimeout(openModal, 400);
+  const name = currentUser?.given_name || 'שלום';
+  addMsg(`שלום ${name}! טענתי את הקורסים שלך מ-Google Classroom 🎓\nמה תרצה לדעת היום?`, 'bot');
+}
+
+function signOut() {
+  google.accounts.oauth2.revoke(googleToken, () => {});
+  googleToken = null;
+  currentUser = null;
+  history.length = 0;
+  document.getElementById('user-info').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  newChat();
+}
+
+// ── UI helpers ───────────────────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('api-key-input').value = apiKey;
+  setTimeout(() => document.getElementById('api-key-input').focus(), 100);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) return;
+  apiKey = key;
+  localStorage.setItem('ss_api_key', key);
+  closeModal();
+}
+
+function newChat() {
+  const keepContext = history.slice(0, 2);
+  history.length = 0;
+  keepContext.forEach(m => history.push(m));
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+  const welcome = document.createElement('div');
+  welcome.className = 'welcome'; welcome.id = 'welcome';
+  welcome.innerHTML = `
+    <div class="welcome-icon">★</div>
+    <h2>שלום! אני Smart Student</h2>
+    <p>עוזר הלימודים החכם שלך — שואל, מסביר, ועוזר לך להתארגן. במה אתחיל לעזור לך?</p>
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="sendQuick('מה יש לי להגיש השבוע?')">
+        <span class="q-icon">📋</span><span class="q-text">מה יש לי השבוע?</span><span class="q-sub">משימות והגשות</span>
+      </button>
+      <button class="quick-btn" onclick="sendQuick('לא הבנתי את החומר בשיעור, תסביר לי')">
+        <span class="q-icon">💡</span><span class="q-text">לא הבנתי משהו</span><span class="q-sub">הסבר חומר לימוד</span>
+      </button>
+      <button class="quick-btn" onclick="sendQuick('תעזור לי עם שיעורי הבית שלי')">
+        <span class="q-icon">✏️</span><span class="q-text">שיעורי בית</span><span class="q-sub">עזרה בתרגילים</span>
+      </button>
+      <button class="quick-btn" onclick="sendQuick('מתי המבחן הבא שלי ואיך אני מתכונן?')">
+        <span class="q-icon">🎯</span><span class="q-text">הכנה למבחן</span><span class="q-sub">תכנון חזרה</span>
+      </button>
+    </div>`;
+  msgs.appendChild(welcome);
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+}
+
+function addMsg(text, role) {
+  hideWelcome();
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  if (role === 'user' && currentUser?.picture) {
+    const img = document.createElement('img');
+    img.src = currentUser.picture;
+    img.style.cssText = 'width:32px;height:32px;border-radius:50%;object-fit:cover;';
+    avatar.appendChild(img);
+  } else {
+    avatar.textContent = role === 'bot' ? '★' : (currentUser?.given_name?.[0] || 'א');
+    if (role === 'user') { avatar.style.background = 'var(--purple)'; avatar.style.color = 'white'; }
+  }
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+  div.appendChild(avatar); div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  hideWelcome();
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'typing-msg';
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar'; avatar.textContent = '★';
+  const bubble = document.createElement('div');
+  bubble.className = 'typing-bubble';
+  bubble.innerHTML = '<span></span><span></span><span></span>';
+  div.appendChild(avatar); div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-msg');
+  if (el) el.remove();
+}
+
+async function callClaude(userMsg) {
+  if (!apiKey) { openModal(); throw new Error('no-key'); }
+  history.push({ role: 'user', content: userMsg });
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM, messages: history })
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  const reply = data.content?.[0]?.text || 'מצטער, הייתה שגיאה. נסה שוב.';
+  history.push({ role: 'assistant', content: reply });
+  return reply;
+}
+
+async function handleSend() {
+  const input = document.getElementById('input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+  addMsg(text, 'user');
+  showTyping();
+  try {
+    const reply = await callClaude(text);
+    removeTyping(); addMsg(reply, 'bot');
+  } catch(e) {
+    removeTyping();
+    if (e.message !== 'no-key') addMsg('מצטער, הייתה בעיה. בדוק את ה-API Key ונסה שוב.', 'bot');
+  }
+}
+
+function sendQuick(text) {
+  document.getElementById('input').value = text;
+  document.getElementById('send-btn').disabled = false;
+  handleSend();
+}
+</script>
+</body>
+</html>
