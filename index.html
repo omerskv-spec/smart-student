@@ -2,234 +2,198 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Smart Student ★</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --primary:#5B4FCF;--primary-light:#7B70E0;--primary-dark:#4338A8;
-  --primary-bg:#EDE9FE;--bg:#F5F3FF;--surface:#FFFFFF;
-  --sidebar:#1E1B4B;--sidebar-hover:#312E81;--text:#1F2937;--text-light:#6B7280;
-  --border:#E5E7EB;--shadow:0 4px 24px rgba(91,79,207,.10);
-}
-html,body{height:100%;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);direction:rtl}
-#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#5B4FCF,#7C3AED)}
-.login-card{background:#fff;border-radius:24px;padding:48px 40px;max-width:440px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.login-logo{font-size:64px;margin-bottom:12px}
-.login-title{font-size:32px;font-weight:700;color:var(--primary);margin-bottom:8px}
-.login-subtitle{font-size:16px;color:var(--text-light);margin-bottom:28px;line-height:1.6}
-.login-features{display:flex;gap:12px;margin:0 0 28px;flex-wrap:wrap;justify-content:center}
-.login-feature{background:var(--primary-bg);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--primary);font-weight:500}
-.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px 24px;border:2px solid var(--border);border-radius:12px;background:var(--bg);cursor:pointer;font-family:'Heebo',sans-serif;font-size:16px;font-weight:600;color:var(--text);transition:all .2s}
-.btn-google:hover{background:#fff;border-color:var(--primary);transform:translateY(-1px)}
-.btn-google img{width:24px;height:24px}
-.login-note{font-size:13px;color:var(--text-light);margin-top:20px}
-#app{display:none;height:100vh;overflow:hidden;flex-direction:row-reverse}
-#app.active{display:flex}
-.sidebar{width:270px;background:var(--sidebar);color:#fff;display:flex;flex-direction:column;flex-shrink:0}
-.sidebar-header{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px}
-.sidebar-logo{font-size:28px}
-.sidebar-title{font-size:16px;font-weight:700}
-.sidebar-subtitle{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
-.sidebar-new-btn{margin:16px;padding:10px 16px;background:var(--primary);border:none;border-radius:10px;color:#fff;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;display:flex;align-items:center;gap:8px;justify-content:center}
-.sidebar-new-btn:hover{background:var(--primary-light)}
-.sidebar-scroll{flex:1;overflow-y:auto}
-.sidebar-scroll::-webkit-scrollbar{width:4px}
-.sidebar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
-.sidebar-section{padding:8px 12px 4px;font-size:10px;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
-.shortcut-item{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:1px 8px;border-radius:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.75);transition:background .15s}
-.shortcut-item:hover{background:var(--sidebar-hover);color:#fff}
-.platform-item{margin:2px 8px;border-radius:8px;cursor:pointer;transition:background .15s}
-.platform-item:hover{background:var(--sidebar-hover)}
-.platform-main{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:13px;color:rgba(255,255,255,.75)}
-.platform-item:hover .platform-main{color:#fff}
-.platform-hint{font-size:10px;color:rgba(255,255,255,.3);padding:0 12px 7px}
-.chat-history{padding:0 8px}
-.chat-item{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;transition:background .15s}
-.chat-item:hover,.chat-item.active{background:var(--sidebar-hover);color:#fff}
-.sidebar-user{padding:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;flex-shrink:0}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden;flex-shrink:0}
-.user-avatar img{width:100%;height:100%;object-fit:cover}
-.user-name{font-size:13px;font-weight:600;color:#fff}
-.user-email{font-size:11px;color:rgba(255,255,255,.5)}
-.btn-logout{margin-right:auto;background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:12px;padding:4px 8px;border-radius:6px;font-family:'Heebo',sans-serif;transition:color .2s}
-.btn-logout:hover{color:#fff;background:rgba(255,255,255,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#5B4FCF;--pl:#7B70E0;--pd:#4338A8;--pb:#EDE9FE;--bg:#F5F3FF;--s:#fff;--sb:#1E1B4B;--sh:#312E81;--t:#1F2937;--tl:#6B7280;--b:#E5E7EB}
+html,body{height:100%;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--t);direction:rtl}
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#5B4FCF,#7C3AED)}
+.card{background:#fff;border-radius:24px;padding:48px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.logo{font-size:60px;margin-bottom:12px}
+.card h1{font-size:30px;font-weight:700;color:var(--p);margin-bottom:8px}
+.card p{font-size:15px;color:var(--tl);margin-bottom:32px;line-height:1.6}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border:2px solid var(--b);border-radius:12px;background:var(--bg);cursor:pointer;font-family:'Heebo',sans-serif;font-size:16px;font-weight:600;color:var(--t);transition:all .2s}
+.gbtn:hover{border-color:var(--p);background:#fff;transform:translateY(-1px)}
+.gbtn img{width:22px}
+.err{color:#dc2626;font-size:13px;margin-top:12px;min-height:18px}
+/* APP */
+#app{display:none;height:100vh;overflow:hidden}
+#app.on{display:flex;flex-direction:row-reverse}
+/* SIDEBAR */
+.sb{width:260px;background:var(--sb);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sb-hd{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo{font-size:26px}
+.sb-title{font-size:15px;font-weight:700;color:#fff}
+.sb-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.new-btn{margin:14px;padding:10px;background:var(--p);border:none;border-radius:10px;color:#fff;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
+.new-btn:hover{background:var(--pl)}
+.sb-sec{padding:6px 14px 3px;font-size:10px;color:rgba(255,255,255,.35);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.sb-scroll{flex:1;overflow-y:auto}
+.sb-scroll::-webkit-scrollbar{width:3px}
+.sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.sc-item{padding:9px 14px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.72);transition:background .15s;display:flex;align-items:center;gap:8px;border-radius:8px;margin:1px 6px}
+.sc-item:hover{background:var(--sh);color:#fff}
+.divider{border:none;border-top:1px solid rgba(255,255,255,.08);margin:8px 14px}
+.pl-item{margin:1px 6px;border-radius:8px;cursor:pointer;transition:background .15s}
+.pl-item:hover{background:var(--sh)}
+.pl-main{padding:8px 14px;font-size:13px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:8px}
+.pl-item:hover .pl-main{color:#fff}
+.pl-hint{font-size:10px;color:rgba(255,255,255,.28);padding:0 14px 6px}
+.ch-item{padding:8px 14px;margin:1px 6px;border-radius:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .15s}
+.ch-item:hover,.ch-item.on{background:var(--sh);color:#fff}
+.sb-user{padding:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.av{width:34px;height:34px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;overflow:hidden;flex-shrink:0}
+.av img{width:100%;height:100%;object-fit:cover}
+.uname{font-size:13px;font-weight:600;color:#fff}
+.uemail{font-size:10px;color:rgba(255,255,255,.45)}
+.out-btn{margin-right:auto;background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;font-size:11px;padding:4px 8px;border-radius:6px;font-family:'Heebo',sans-serif;transition:color .2s}
+.out-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+/* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.chat-header{padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.chat-header-icon{font-size:24px}
-.chat-header-title{font-size:17px;font-weight:700;color:var(--primary)}
-.chat-header-sub{font-size:12px;color:var(--text-light)}
-.chat-header-right{margin-right:auto;display:flex;align-items:center;gap:8px}
-.header-avatar{width:34px;height:34px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;overflow:hidden;border:2px solid var(--primary-bg)}
-.header-avatar img{width:100%;height:100%;object-fit:cover}
-.header-user-name{font-size:13px;font-weight:600;color:var(--text)}
-.messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
-.messages::-webkit-scrollbar{width:6px}
-.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.welcome-area{text-align:center;margin:auto;max-width:500px;padding:32px}
-.welcome-icon{font-size:56px;margin-bottom:16px}
-.welcome-title{font-size:24px;font-weight:700;color:var(--primary);margin-bottom:8px}
-.welcome-subtitle{font-size:15px;color:var(--text-light);line-height:1.7;margin-bottom:24px}
-.shortcuts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.shortcut-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:24px;padding:10px 18px;font-size:14px;color:var(--text);cursor:pointer;font-family:'Heebo',sans-serif;font-weight:500;transition:all .2s}
-.shortcut-btn:hover{border-color:var(--primary);background:var(--primary-bg);color:var(--primary);transform:translateY(-1px)}
-.message{max-width:75%;display:flex;flex-direction:column;gap:4px}
-.message.user{align-self:flex-start}
-.message.bot{align-self:flex-end}
-.msg-bubble{padding:12px 16px;border-radius:18px;font-size:14.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
-.message.user .msg-bubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
-.message.bot .msg-bubble{background:var(--surface);color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.msg-time{font-size:11px;color:var(--text-light);padding:0 4px}
-.message.user .msg-time{text-align:right}
-.message.bot .msg-time{text-align:left}
-.typing-indicator{display:flex;align-items:center;gap:6px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:18px;border-bottom-left-radius:4px;width:fit-content}
-.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--primary-light);animation:tb 1.2s infinite}
-.typing-dot:nth-child(2){animation-delay:.2s}
-.typing-dot:nth-child(3){animation-delay:.4s}
-@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-8px);opacity:1}}
-.input-area{padding:16px 24px;background:var(--surface);border-top:1px solid var(--border)}
-.input-wrapper{display:flex;gap:10px;align-items:flex-end;background:var(--bg);border:1.5px solid var(--border);border-radius:16px;padding:10px 14px;transition:border-color .2s}
-.input-wrapper:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,79,207,.1)}
-#messageInput{flex:1;border:none;background:transparent;font-family:'Heebo',sans-serif;font-size:15px;color:var(--text);resize:none;outline:none;max-height:140px;min-height:24px;direction:rtl;line-height:1.5}
-#messageInput::placeholder{color:var(--text-light)}
-.send-btn{background:var(--primary);border:none;border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-.send-btn:hover{background:var(--primary-dark);transform:scale(1.05)}
-.send-btn svg{width:18px;height:18px;fill:#fff}
-.input-hint{font-size:11px;color:var(--text-light);margin-top:8px;text-align:center}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal{background:#fff;border-radius:20px;padding:36px;max-width:440px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-icon{font-size:44px;text-align:center;margin-bottom:16px}
-.modal-title{font-size:20px;font-weight:700;color:var(--primary);text-align:center;margin-bottom:8px}
-.modal-subtitle{font-size:14px;color:var(--text-light);text-align:center;margin-bottom:24px;line-height:1.6}
-.modal input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:16px;direction:ltr;text-align:left}
-.modal input:focus{border-color:var(--primary)}
-.modal-btn{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s}
-.modal-btn:hover{background:var(--primary-dark)}
-.modal-link{display:block;text-align:center;font-size:12px;color:var(--primary);margin-top:12px;text-decoration:none}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
-.toast.show{opacity:1}
-@media(max-width:768px){.sidebar{display:none}.message{max-width:90%}}
+.hdr{padding:14px 22px;border-bottom:1px solid var(--b);background:#fff;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.hdr-icon{font-size:22px}
+.hdr-title{font-size:16px;font-weight:700;color:var(--p)}
+.hdr-sub{font-size:11px;color:var(--tl)}
+.hdr-r{margin-right:auto;display:flex;align-items:center;gap:8px}
+.hav{width:32px;height:32px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;overflow:hidden;border:2px solid var(--pb)}
+.hav img{width:100%;height:100%;object-fit:cover}
+.hname{font-size:13px;font-weight:600;color:var(--t)}
+/* MESSAGES */
+.msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msgs::-webkit-scrollbar{width:5px}
+.msgs::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.welcome{text-align:center;margin:auto;max-width:480px;padding:28px}
+.w-icon{font-size:52px;margin-bottom:14px}
+.w-title{font-size:22px;font-weight:700;color:var(--p);margin-bottom:6px}
+.w-sub{font-size:14px;color:var(--tl);line-height:1.7;margin-bottom:20px}
+.sc-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sc-btn{background:#fff;border:1.5px solid var(--b);border-radius:20px;padding:8px 16px;font-size:13px;color:var(--t);cursor:pointer;font-family:'Heebo',sans-serif;font-weight:500;transition:all .2s}
+.sc-btn:hover{border-color:var(--p);background:var(--pb);color:var(--p);transform:translateY(-1px)}
+.msg{max-width:76%;display:flex;flex-direction:column;gap:3px}
+.msg.u{align-self:flex-start}
+.msg.b{align-self:flex-end}
+.bubble{padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg.u .bubble{background:var(--p);color:#fff;border-bottom-right-radius:4px}
+.msg.b .bubble{background:#fff;color:var(--t);border:1px solid var(--b);border-bottom-left-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.mtime{font-size:10px;color:var(--tl);padding:0 3px}
+.msg.u .mtime{text-align:right}
+.msg.b .mtime{text-align:left}
+.typing{display:flex;align-items:center;gap:5px;padding:12px 15px;background:#fff;border:1px solid var(--b);border-radius:18px;border-bottom-left-radius:4px;width:fit-content}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--pl);animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-7px);opacity:1}}
+/* INPUT */
+.inp-area{padding:14px 20px;background:#fff;border-top:1px solid var(--b)}
+.inp-wrap{display:flex;gap:8px;align-items:flex-end;background:var(--bg);border:1.5px solid var(--b);border-radius:14px;padding:9px 12px;transition:border-color .2s}
+.inp-wrap:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(91,79,207,.1)}
+#mi{flex:1;border:none;background:transparent;font-family:'Heebo',sans-serif;font-size:14px;color:var(--t);resize:none;outline:none;max-height:120px;min-height:22px;direction:rtl;line-height:1.5}
+#mi::placeholder{color:var(--tl)}
+.send{background:var(--p);border:none;border-radius:9px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.send:hover{background:var(--pd);transform:scale(1.05)}
+.send svg{width:17px;height:17px;fill:#fff}
+.hint{font-size:10px;color:var(--tl);margin-top:6px;text-align:center}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal{background:#fff;border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.m-icon{font-size:40px;text-align:center;margin-bottom:14px}
+.m-title{font-size:19px;font-weight:700;color:var(--p);text-align:center;margin-bottom:6px}
+.m-sub{font-size:13px;color:var(--tl);text-align:center;margin-bottom:20px;line-height:1.6}
+.modal input{width:100%;padding:11px 14px;border:1.5px solid var(--b);border-radius:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:14px;direction:ltr;text-align:left}
+.modal input:focus{border-color:var(--p)}
+.m-btn{width:100%;padding:12px;background:var(--p);color:#fff;border:none;border-radius:10px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+.m-btn:hover{background:var(--pd)}
+.m-link{display:block;text-align:center;font-size:12px;color:var(--p);margin-top:10px;text-decoration:none}
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:88vw;text-align:center}
+.toast.on{opacity:1}
+@media(max-width:700px){.sb{display:none}.msg{max-width:92%}}
 </style>
 </head>
 <body>
 
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">★</div>
-    <h1 class="login-title">Smart Student</h1>
-    <p class="login-subtitle">העוזר הלימודי החכם שלך<br/>לתלמידי ישראל גיל 12–18</p>
-    <div class="login-features">
-      <span class="login-feature">📚 עזרה בשיעורי בית</span>
-      <span class="login-feature">🎯 הכנה למבחנים</span>
-      <span class="login-feature">💡 הסברים בעברית</span>
-    </div>
-    <button class="btn-google" onclick="signInWithGoogle()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
+<div id="login">
+  <div class="card">
+    <div class="logo">★</div>
+    <h1>Smart Student</h1>
+    <p>העוזר הלימודי החכם שלך<br/>לתלמידי ישראל גיל 12–18</p>
+    <button class="gbtn" onclick="gLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
       התחבר עם Google
     </button>
-    <p class="login-note">🔒 מאובטח • נתוניך שמורים בפרטיות</p>
+    <div class="err" id="lerr"></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="apiKeyModal" style="display:none">
+<div class="overlay" id="keyModal" style="display:none">
   <div class="modal">
-    <div class="modal-icon">🔑</div>
-    <h2 class="modal-title">הגדרת Gemini API Key</h2>
-    <p class="modal-subtitle">כדי להפעיל את הצ'אט נדרש מפתח API של Gemini.<br/>המפתח נשמר רק במכשיר שלך.</p>
-    <input type="text" id="apiKeyInput" placeholder="הדבק כאן את ה-API Key (AIza...)"/>
-    <button class="modal-btn" onclick="saveApiKey()">שמור והמשך</button>
-    <a class="modal-link" href="https://aistudio.google.com/apikey" target="_blank">🔗 קבל מפתח API חינם מ-Google AI Studio</a>
+    <div class="m-icon">🔑</div>
+    <h2 class="m-title">Gemini API Key</h2>
+    <p class="m-sub">הכנס את המפתח שלך מ-Google AI Studio.<br/>נשמר רק במכשיר שלך.</p>
+    <input id="keyInp" type="text" placeholder="AIza..."/>
+    <button class="m-btn" onclick="saveKey()">שמור והמשך</button>
+    <a class="m-link" href="https://aistudio.google.com/apikey" target="_blank">🔗 קבל מפתח חינם</a>
   </div>
 </div>
 
 <div id="app">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-logo">★</span>
-      <div>
-        <div class="sidebar-title">Smart Student</div>
-        <div class="sidebar-subtitle">עוזר לימודי חכם</div>
-      </div>
+  <div class="sb">
+    <div class="sb-hd">
+      <span class="sb-logo">★</span>
+      <div><div class="sb-title">Smart Student</div><div class="sb-sub">עוזר לימודי חכם</div></div>
     </div>
-    <button class="sidebar-new-btn" onclick="newChat()">✏️ שיחה חדשה</button>
-    <div class="sidebar-scroll">
-      <div class="sidebar-section">קיצורים</div>
-      <div class="shortcut-item" onclick="sendShortcut('מה יש לי השבוע? תעזור לי לתכנן')">📅 מה יש לי השבוע?</div>
-      <div class="shortcut-item" onclick="sendShortcut('לא הבנתי משהו, תסביר לי')">💡 לא הבנתי משהו</div>
-      <div class="shortcut-item" onclick="sendShortcut('יש לי שיעורי בית, תעזור לי')">📝 שיעורי בית</div>
-      <div class="shortcut-item" onclick="sendShortcut('אני צריך להכין מבחן, תעזור לי')">📚 הכנה למבחן</div>
-      <div class="sidebar-section" style="margin-top:8px">המערכות שלי</div>
-      <div class="platform-item" onclick="openPlatform('Google Classroom','https://classroom.google.com')">
-        <div class="platform-main">🏫 Google Classroom</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="platform-item" onclick="openPlatform('וובטופ','https://webtop.smartschool.co.il')">
-        <div class="platform-main">💻 וובטופ</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="platform-item" onclick="openPlatform('קמפוס וירטואלי','https://mvc.cet.ac.il')">
-        <div class="platform-main">📚 קמפוס וירטואלי</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="platform-item" onclick="openPlatform('קלאסוס','https://my.classoos.com')">
-        <div class="platform-main">📖 קלאסוס</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="platform-item" onclick="openPlatform('אופק','https://students.myofek.cet.ac.il')">
-        <div class="platform-main">🔭 אופק</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="platform-item" onclick="openPlatform('קלאס אי','https://www.classe.world')">
-        <div class="platform-main">🌍 קלאס אי</div>
-        <div class="platform-hint">נפתח בטאב חדש</div>
-      </div>
-      <div class="sidebar-section" style="margin-top:8px">שיחות אחרונות</div>
-      <div class="chat-history" id="chatHistory"></div>
+    <button class="new-btn" onclick="newChat()">✏️ שיחה חדשה</button>
+    <div class="sb-scroll">
+      <div class="sb-sec">קיצורים</div>
+      <div class="sc-item" onclick="qs('📋 מה יש לי השבוע?')">📋 מה יש לי השבוע?</div>
+      <div class="sc-item" onclick="qs('💡 לא הבנתי משהו, תסביר לי')">💡 לא הבנתי משהו</div>
+      <div class="sc-item" onclick="qs('✏️ יש לי שיעורי בית, תעזור לי')">✏️ שיעורי בית</div>
+      <div class="sc-item" onclick="qs('🎯 אני צריך להכין מבחן, תעזור לי')">🎯 הכנה למבחן</div>
+      <hr class="divider"/>
+      <div class="sb-sec">המערכות שלי</div>
+      <div class="pl-item" onclick="op('Google Classroom','https://classroom.google.com')"><div class="pl-main">🏫 Google Classroom</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="pl-item" onclick="op('וובטופ','https://webtop.smartschool.co.il')"><div class="pl-main">💻 וובטופ</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="pl-item" onclick="op('קמפוס וירטואלי','https://mvc.cet.ac.il')"><div class="pl-main">📚 קמפוס וירטואלי</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="pl-item" onclick="op('קלאסוס','https://my.classoos.com')"><div class="pl-main">📖 קלאסוס</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="pl-item" onclick="op('אופק','https://students.myofek.cet.ac.il')"><div class="pl-main">🔭 אופק</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="pl-item" onclick="op('קלאס אי','https://www.classe.world')"><div class="pl-main">🌍 קלאס אי</div><div class="pl-hint">נפתח בטאב חדש</div></div>
+      <div class="sb-sec" style="margin-top:8px">שיחות</div>
+      <div id="chHist"></div>
     </div>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="sidebarAvatar"></div>
-      <div>
-        <div class="user-name" id="sidebarName"></div>
-        <div class="user-email" id="sidebarEmail"></div>
-      </div>
-      <button class="btn-logout" onclick="doSignOut()">יציאה</button>
+    <div class="sb-user">
+      <div class="av" id="sav"></div>
+      <div><div class="uname" id="sname"></div><div class="uemail" id="semail"></div></div>
+      <button class="out-btn" onclick="logout()">יציאה</button>
     </div>
   </div>
   <div class="main">
-    <div class="chat-header">
-      <span class="chat-header-icon">★</span>
-      <div>
-        <div class="chat-header-title">Smart Student</div>
-        <div class="chat-header-sub">מוכן לעזור לך ללמוד</div>
-      </div>
-      <div class="chat-header-right">
-        <div class="header-user-name" id="headerName"></div>
-        <div class="header-avatar" id="headerAvatar"></div>
-      </div>
+    <div class="hdr">
+      <span class="hdr-icon">★</span>
+      <div><div class="hdr-title">Smart Student</div><div class="hdr-sub">מוכן לעזור לך</div></div>
+      <div class="hdr-r"><span class="hname" id="hname"></span><div class="hav" id="hav"></div></div>
     </div>
-    <div class="messages" id="messages">
-      <div class="welcome-area" id="welcomeArea">
-        <div class="welcome-icon">🎓</div>
-        <h2 class="welcome-title">שלום! אני Smart Student</h2>
-        <p class="welcome-subtitle">אני כאן לעזור לך בלימודים — שאל אותי כל שאלה בעברית!</p>
-        <div class="shortcuts">
-          <button class="shortcut-btn" onclick="sendShortcut('מה יש לי השבוע? תעזור לי לתכנן')">📅 מה יש לי השבוע?</button>
-          <button class="shortcut-btn" onclick="sendShortcut('לא הבנתי משהו, תסביר לי')">❓ לא הבנתי משהו</button>
-          <button class="shortcut-btn" onclick="sendShortcut('יש לי שיעורי בית, תעזור לי')">📝 שיעורי בית</button>
-          <button class="shortcut-btn" onclick="sendShortcut('אני צריך להכין מבחן, תעזור לי')">📚 הכנה למבחן</button>
+    <div class="msgs" id="msgs">
+      <div class="welcome" id="welcome">
+        <div class="w-icon">🎓</div>
+        <h2 class="w-title">שלום! אני Smart Student</h2>
+        <p class="w-sub">שאל אותי כל שאלה בעברית — אני כאן לעזור!</p>
+        <div class="sc-btns">
+          <button class="sc-btn" onclick="qs('מה יש לי השבוע?')">📋 מה יש לי השבוע?</button>
+          <button class="sc-btn" onclick="qs('לא הבנתי משהו')">❓ לא הבנתי משהו</button>
+          <button class="sc-btn" onclick="qs('שיעורי בית')">✏️ שיעורי בית</button>
+          <button class="sc-btn" onclick="qs('הכנה למבחן')">🎯 הכנה למבחן</button>
         </div>
       </div>
     </div>
-    <div class="input-area">
-      <div class="input-wrapper">
-        <textarea id="messageInput" placeholder="שאל שאלה..." rows="1"
-          onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
-        <button class="send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
+    <div class="inp-area">
+      <div class="inp-wrap">
+        <textarea id="mi" placeholder="שאל שאלה..." rows="1" onkeydown="kd(event)" oninput="ar(this)"></textarea>
+        <button class="send" onclick="send()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
       </div>
-      <div class="input-hint">Enter לשליחה • Shift+Enter לשורה חדשה</div>
+      <div class="hint">Enter לשליחה • Shift+Enter לשורה חדשה</div>
     </div>
   </div>
 </div>
@@ -237,148 +201,135 @@ html,body{height:100%;font-family:'Heebo',sans-serif;background:var(--bg);color:
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-const fc = {
-  apiKey:"AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY",
-  authDomain:"smart-student-6bca3.firebaseapp.com",
-  projectId:"smart-student-6bca3",
-  appId:"1:909867168788:web:a1cc486ad8e29e1226e301"
-};
-const app = initializeApp(fc);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-window._fbAuth=auth; window._fbProvider=provider;
-window._fbSignOut=fbSignOut; window._signInWithPopup=signInWithPopup;
-onAuthStateChanged(auth, user => {
-  if(user){window._currentUser=user; showApp(user);}
-  else{window._currentUser=null; showLogin();}
-});
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut as so}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+const cfg={apiKey:"AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY",authDomain:"smart-student-6bca3.firebaseapp.com",projectId:"smart-student-6bca3",appId:"1:909867168788:web:a1cc486ad8e29e1226e301"};
+const auth=getAuth(initializeApp(cfg));
+const prov=new GoogleAuthProvider();
+window._auth=auth;window._prov=prov;window._so=so;window._siwp=signInWithPopup;
+onAuthStateChanged(auth,u=>{if(u){window._u=u;boot(u);}else{window._u=null;showLogin();}});
 </script>
 
 <script>
-const SYSTEM = 'אתה Smart Student, עוזר לימודי לתלמידי ישראל גיל 12-18. אתה עונה תמיד בעברית בשפה ידידותית וברורה. אתה עוזר בכל נושא לימודי. כשמסבירים תן דוגמה. כשתלמיד תקוע שאל איפה בדיוק לפני שמסבירים. כשתלמיד מזכיר מערכת לימוד (וובטופ, קלאסוס, אופק, קמפוס וירטואלי, קלאס אי, Google Classroom) שאל על מה עובדים שם והתאם את העזרה.';
-let history=[], sessions=JSON.parse(localStorage.getItem('ssSessions')||'[]'), sessionId=null;
+const SYS='אתה Smart Student — עוזר לימודי חכם לתלמידי ישראל גיל 12-18. עונה תמיד בעברית בשפה ידידותית ונגישה. עוזר עם שיעורי בית, הסברי חומר, הכנה למבחנים. כשתלמיד שואל — קודם שאל איפה הוא תקוע, אחר כך הסבר. תן דוגמה קונקרטית אחרי כל הסבר. מקסימום 4-5 משפטים בתשובה.';
+let hist=[],sess=JSON.parse(localStorage.getItem('ss_sess')||'[]'),sid=null;
 
-function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('app').classList.remove('active');}
-function showApp(user){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('app').classList.add('active');
-  const name=user.displayName||user.email.split('@')[0];
-  document.getElementById('headerName').textContent=name;
-  document.getElementById('sidebarName').textContent=name;
-  document.getElementById('sidebarEmail').textContent=user.email;
-  ['headerAvatar','sidebarAvatar'].forEach(id=>{
+function showLogin(){document.getElementById('login').style.display='flex';document.getElementById('app').classList.remove('on');}
+function boot(u){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('on');
+  const n=u.displayName||u.email.split('@')[0];
+  document.getElementById('hname').textContent=n;
+  document.getElementById('sname').textContent=n;
+  document.getElementById('semail').textContent=u.email;
+  ['hav','sav'].forEach(id=>{
     const el=document.getElementById(id);
-    if(user.photoURL){el.innerHTML='<img src="'+user.photoURL+'" alt="a"/>';}
-    else{el.textContent=name[0].toUpperCase();el.style.color='#fff';}
+    if(u.photoURL){el.innerHTML='<img src="'+u.photoURL+'"/>';}
+    else{el.textContent=n[0].toUpperCase();el.style.color='#fff';}
   });
-  renderSessions();
-  if(!localStorage.getItem('geminiKey'))document.getElementById('apiKeyModal').style.display='flex';
-  else{newChat();sendWelcome(name);}
+  renderHist();
+  if(!localStorage.getItem('gkey')){document.getElementById('keyModal').style.display='flex';}
+  else{newChat();addWelcome(n);}
 }
-async function signInWithGoogle(){
-  try{await window._signInWithPopup(window._fbAuth,window._fbProvider);}
-  catch(e){toast('שגיאה בהתחברות: '+e.message);}
+function addWelcome(n){
+  const w=document.getElementById('welcome');
+  if(w){w.querySelector('.w-title').textContent='שלום '+n+'! 🎓';}
 }
-function doSignOut(){if(confirm('לצאת?'))window._fbSignOut(window._fbAuth);}
-function saveApiKey(){
-  const k=document.getElementById('apiKeyInput').value.trim();
-  if(!k){toast('נא להזין מפתח תקין');return;}
-  localStorage.setItem('geminiKey',k);
-  document.getElementById('apiKeyModal').style.display='none';
+async function gLogin(){
+  document.getElementById('lerr').textContent='';
+  try{await window._siwp(window._auth,window._prov);}
+  catch(e){document.getElementById('lerr').textContent='❌ שגיאה: '+(e.message||'נסה שוב');}
+}
+function logout(){if(confirm('לצאת?'))window._so(window._auth);}
+function saveKey(){
+  const k=document.getElementById('keyInp').value.trim();
+  if(!k){toast('נא להזין מפתח');return;}
+  localStorage.setItem('gkey',k);
+  document.getElementById('keyModal').style.display='none';
   toast('✅ מפתח נשמר!');
-  const user=window._currentUser;
-  if(user){newChat();sendWelcome(user.displayName||user.email.split('@')[0]);}
+  const u=window._u;
+  if(u){newChat();addWelcome(u.displayName||u.email.split('@')[0]);}
 }
-function openPlatform(name,url){
-  toast('פותח '+name+'... חזור ל-Smart Student לשאול שאלות 💡',2000);
-  setTimeout(()=>window.open(url,'_blank'),400);
+function op(name,url){
+  toast('🚀 פותח '+name+'...',2000);
+  setTimeout(()=>window.open(url,'_blank'),300);
 }
 function newChat(){
-  history=[];sessionId=Date.now().toString();
-  const m=document.getElementById('messages');
-  m.innerHTML='';m.appendChild(createWelcome());
+  hist=[];sid=Date.now().toString();
+  const m=document.getElementById('msgs');
+  m.innerHTML='';
+  const d=document.createElement('div');d.className='welcome';d.id='welcome';
+  d.innerHTML='<div class="w-icon">🎓</div><h2 class="w-title">שלום! אני Smart Student</h2><p class="w-sub">שאל אותי כל שאלה בעברית!</p><div class="sc-btns"><button class="sc-btn" onclick="qs('מה יש לי השבוע?')">📋 מה יש לי השבוע?</button><button class="sc-btn" onclick="qs('לא הבנתי משהו')">❓ לא הבנתי</button><button class="sc-btn" onclick="qs('שיעורי בית')">✏️ שיעורי בית</button><button class="sc-btn" onclick="qs('הכנה למבחנ')">🎯 הכנה למבחן</button></div>';
+  m.appendChild(d);
+  const u=window._u;if(u)addWelcome(u.displayName||u.email.split('@')[0]);
 }
-function sendWelcome(name){
-  const m=document.getElementById('messages');
-  const wa=document.getElementById('welcomeArea');
-  if(wa){wa.querySelector('.welcome-title').textContent='שלום '+name+'! 🎓';}
-}
-function createWelcome(){
-  const d=document.createElement('div');d.className='welcome-area';d.id='welcomeArea';
-  d.innerHTML='★<div class="welcome-icon">🎓</div><h2 class="welcome-title">שלום! אני Smart Student</h2><p class="welcome-subtitle">אני כאן לעזור לך בלימודים — שאל אותי כל שאלה בעברית!</p><div class="shortcuts"><button class="shortcut-btn" onclick="sendShortcut('מה יש לי השבוע?')">📅 מה יש לי השבוע?</button><button class="shortcut-btn" onclick="sendShortcut('לא הבנתי משהו')">❓ לא הבנתי משהו</button><button class="shortcut-btn" onclick="sendShortcut('שיעורי בית')">📝 שיעורי בית</button><button class="shortcut-btn" onclick="sendShortcut('הכנה למבחן')">📚 הכנה למבחן</button></div>';
-  return d;
-}
-function sendShortcut(t){document.getElementById('messageInput').value=t;sendMessage();}
-function handleKeyDown(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
-function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
+function qs(t){document.getElementById('mi').value=t;send();}
+function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 function addMsg(role,text){
-  const wa=document.getElementById('welcomeArea');if(wa)wa.remove();
-  const c=document.getElementById('messages');
-  const d=document.createElement('div');d.className='message '+role;
+  const w=document.getElementById('welcome');if(w)w.remove();
+  const c=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg '+role;
   const now=new Date(),t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  d.innerHTML='<div class="msg-bubble">'+esc(text)+'</div><div class="msg-time">'+t+'</div>';
+  d.innerHTML='<div class="bubble">'+esc(text)+'</div><div class="mtime">'+t+'</div>';
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
 function showTyping(){
-  const c=document.getElementById('messages');
-  const d=document.createElement('div');d.className='message bot';d.id='typing';
-  d.innerHTML='<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  const c=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='msg b';d.id='typ';
+  d.innerHTML='<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
   c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
-function hideTyping(){const e=document.getElementById('typing');if(e)e.remove();}
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-async function sendMessage(){
-  const inp=document.getElementById('messageInput');
-  const text=inp.value.trim();if(!text)return;
-  const key=localStorage.getItem('geminiKey');
-  if(!key){document.getElementById('apiKeyModal').style.display='flex';return;}
+function hideTyping(){const e=document.getElementById('typ');if(e)e.remove();}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function send(){
+  const inp=document.getElementById('mi');
+  const txt=inp.value.trim();if(!txt)return;
+  const k=localStorage.getItem('gkey');
+  if(!k){document.getElementById('keyModal').style.display='flex';return;}
   inp.value='';inp.style.height='auto';
-  addMsg('user',text);
-  history.push({role:'user',parts:[{text}]});
-  if(!sessionId)sessionId=Date.now().toString();
+  addMsg('u',txt);
+  hist.push({role:'user',parts:[{text:txt}]});
+  if(!sid)sid=Date.now().toString();
   showTyping();
   try{
-    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
+    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+k,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({systemInstruction:{parts:[{text:SYSTEM}]},contents:history,generationConfig:{temperature:0.7,maxOutputTokens:2048}})
+      body:JSON.stringify({systemInstruction:{parts:[{text:SYS}]},contents:hist,generationConfig:{temperature:0.7,maxOutputTokens:1024}})
     });
     hideTyping();
-    if(!res.ok){
-      const err=await res.json();
-      if(res.status===400||res.status===403){
-        toast('❌ API Key לא תקין');localStorage.removeItem('geminiKey');
-        document.getElementById('apiKeyModal').style.display='flex';
-      }else addMsg('bot','❌ שגיאה: '+(err.error?.message||'נסה שוב'));
+    if(!r.ok){
+      const er=await r.json();
+      if(r.status===400||r.status===403){
+        toast('❌ מפתח API לא תקין');
+        localStorage.removeItem('gkey');
+        document.getElementById('keyModal').style.display='flex';
+      }else addMsg('b','❌ שגיאה: '+(er.error?.message||'נסה שוב'));
       return;
     }
-    const data=await res.json();
-    const botText=data.candidates?.[0]?.content?.parts?.[0]?.text||'מצטער, נסה שוב.';
-    history.push({role:'model',parts:[{text:botText}]});
-    addMsg('bot',botText);
-    saveSession(text);
-  }catch(e){hideTyping();addMsg('bot','❌ שגיאת חיבור. בדוק אינטרנט.');}
+    const data=await r.json();
+    const ans=data.candidates?.[0]?.content?.parts?.[0]?.text||'מצטער, לא הצלחתי. נסה שוב.';
+    hist.push({role:'model',parts:[{text:ans}]});
+    addMsg('b',ans);
+    saveSess(txt);
+  }catch(e){hideTyping();addMsg('b','❌ שגיאת חיבור. בדוק אינטרנט.');}
 }
-function saveSession(msg){
-  const s=sessions.find(x=>x.id===sessionId);
-  if(s){s.updatedAt=Date.now();}
-  else{sessions.unshift({id:sessionId,title:msg.substring(0,30)+(msg.length>30?'...':''),createdAt:Date.now(),updatedAt:Date.now()});if(sessions.length>20)sessions=sessions.slice(0,20);}
-  localStorage.setItem('ssSessions',JSON.stringify(sessions));
-  renderSessions();
+function saveSess(msg){
+  const s=sess.find(x=>x.id===sid);
+  if(s){s.up=Date.now();}else{sess.unshift({id:sid,title:msg.substring(0,28)+(msg.length>28?'...':''),cr:Date.now(),up:Date.now()});if(sess.length>20)sess=sess.slice(0,20);}
+  localStorage.setItem('ss_sess',JSON.stringify(sess));renderHist();
 }
-function renderSessions(){
-  const c=document.getElementById('chatHistory');c.innerHTML='';
-  sessions.slice(0,15).forEach(s=>{
-    const d=document.createElement('div');d.className='chat-item'+(s.id===sessionId?' active':'');
-    d.textContent=s.title;d.onclick=()=>{document.querySelectorAll('.chat-item').forEach(e=>e.classList.remove('active'));d.classList.add('active');sessionId=s.id;};
+function renderHist(){
+  const c=document.getElementById('chHist');c.innerHTML='';
+  sess.slice(0,12).forEach(s=>{
+    const d=document.createElement('div');d.className='ch-item'+(s.id===sid?' on':'');
+    d.textContent=s.title;d.onclick=()=>{document.querySelectorAll('.ch-item').forEach(e=>e.classList.remove('on'));d.classList.add('on');sid=s.id;};
     c.appendChild(d);
   });
 }
 function toast(msg,dur){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur||3000);
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),dur||3000);
 }
 </script>
 </body>
