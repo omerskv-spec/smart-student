@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Heebo', sans-serif;
+  direction: rtl;
+  background: #F7F6FF;
+  color: #1A1A2E;
+}
+
+:root {
+  --purple: #5B4FCF;
+  --purple-dark: #3B32A0;
+  --purple-light: #EAE8FC;
+  --purple-pale: #F5F3FF;
+  --bg: #F7F6FF;
+  --text: #1A1A2E;
+  --muted: #6B6894;
+  --border: rgba(91,79,207,0.12);
+  --green: #1D9E75;
+}
+
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
