@@ -80,7 +80,7 @@ export default function OnboardingPage() {
             {SUBJECTS.map(s => (
               <button key={s.id} onClick={() => toggleSubject(s.id)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm border transition-all text-right ${subjects.includes(s.id) ? 'bg-purple-100 border-purple-400 text-purple-900 font-medium' : 'bg-white text-[var(--text)] border-[var(--border)] hover:border-purple-300'}`}>
-                <span>{s.emoji}</span><span>{s.label}</span>
+                <span>{s.emoji}</span><span>{s.name}</span>
               </button>
             ))}
           </div>
