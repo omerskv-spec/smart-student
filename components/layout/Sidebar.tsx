@@ -44,9 +44,9 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
 
         <p className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider px-2 py-2">המערכות שלי</p>
         {SYSTEM_LINKS.map(l => (
-          <button key={l.url} onClick={() => openLink(l.url, l.label)}
+          <button key={l.url} onClick={() => openLink(l.url, l.name)}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[var(--muted)] hover:bg-purple-50 hover:text-purple-700 transition-all text-right">
-            <span>{l.emoji}</span><span>{l.label}</span>
+            <span>{l.emoji}</span><span>{l.name}</span>
           </button>
         ))}
 
@@ -55,9 +55,9 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
             <hr className="my-3 border-[var(--border)]" />
             <p className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider px-2 py-2">חומר עזר</p>
             {userSubjects.map(s => (
-              <button key={s.id} onClick={() => openLink(REFERENCE_LINKS[s.id], s.label)}
+              <button key={s.id} onClick={() => openLink(REFERENCE_LINKS[s.id], s.name)}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[var(--muted)] hover:bg-purple-50 hover:text-purple-700 transition-all text-right">
-                <span>{s.emoji}</span><span>{s.label}</span>
+                <span>{s.emoji}</span><span>{s.name}</span>
               </button>
             ))}
           </>
