@@ -52,7 +52,7 @@ export default function ChatPage() {
             {messages.length === 0 ? (
               <WelcomeScreen name={user.name?.split(' ')[0] ?? ''} grade={user.grade ?? ''} onQuick={sendMessage} />
             ) : (
-              messages.map(m => <MessageBubble key={m.id} message={m} avatarUrl={user.avatar_url} />)
+              messages.map(m => <MessageBubble key={m.id} message={m} avatarUrl={user.avatar_url ?? undefined} />)
             )}
             {loading && <TypingIndicator />}
             {error && <p className="text-center text-red-500 text-sm bg-red-50 px-4 py-2 rounded-xl">{error}</p>}
