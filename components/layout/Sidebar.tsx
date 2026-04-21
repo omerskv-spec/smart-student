@@ -24,28 +24,28 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
   const userSubjects = SUBJECTS.filter(s => user.subjects?.includes(s.id));
 
   return (
-    <aside className="w-64 bg-white border-l border-[var(--border)] flex flex-col overflow-y-auto scrollbar-thin flex-shrink-0">
+    <aside className="w-64 bg-[#EEEEE8] border-l border-[rgba(0,0,0,0.08)] flex flex-col overflow-y-auto scrollbar-thin flex-shrink-0">
       <div className="p-3">
-        <button onClick={onNew} className="w-full flex items-center justify-center gap-2 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-all">
+        <button onClick={onNew} className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-white text-sm font-medium rounded-xl transition-all">
           <span className="text-base">+</span> שיחה חדשה
         </button>
       </div>
 
       <nav className="flex-1 px-2 pb-4">
-        <p className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider px-2 py-2 mt-1">קיצורים</p>
+        <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2 mt-1">קיצורים</p>
         {QUICK_ACTIONS.map(a => (
           <button key={a.msg} onClick={() => onQuick(a.msg)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[var(--muted)] hover:bg-purple-50 hover:text-purple-700 transition-all text-right">
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
             <span>{a.icon}</span><span>{a.label}</span>
           </button>
         ))}
 
         <hr className="my-3 border-[var(--border)]" />
 
-        <p className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider px-2 py-2">המערכות שלי</p>
+        <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2">המערכות שלי</p>
         {SYSTEM_LINKS.map(l => (
           <button key={l.url} onClick={() => openLink(l.url, l.name)}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[var(--muted)] hover:bg-purple-50 hover:text-purple-700 transition-all text-right">
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
             <span>{l.emoji}</span><span>{l.name}</span>
           </button>
         ))}
@@ -53,10 +53,10 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
         {userSubjects.length > 0 && (
           <>
             <hr className="my-3 border-[var(--border)]" />
-            <p className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider px-2 py-2">חומר עזר</p>
+            <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2">חומר עזר</p>
             {userSubjects.map(s => (
               <button key={s.id} onClick={() => openLink(REFERENCE_LINKS[s.id], s.name)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[var(--muted)] hover:bg-purple-50 hover:text-purple-700 transition-all text-right">
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
                 <span>{s.emoji}</span><span>{s.name}</span>
               </button>
             ))}
