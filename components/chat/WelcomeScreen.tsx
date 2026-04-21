@@ -18,7 +18,7 @@ export function WelcomeScreen({ name, grade, onQuick }: Props) {
       <div className="grid grid-cols-2 gap-3 w-full max-w-md">
         {QUICK.map(q => (
           <button key={q.msg} onClick={() => onQuick(q.msg)}
-            className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-4 text-right hover:border-purple-300 hover:bg-[#1A1A1A] transition-all">
+            className="bg-white border border-[rgba(0,0,0,0.08)] rounded-2xl p-4 text-right hover:border-[rgba(0,0,0,0.2)] hover:bg-[#1A1A1A] transition-all">
             <span className="text-2xl block mb-2">{q.icon}</span>
             <span className="font-medium text-sm text-[#1A1A1A] block">{q.title}</span>
             <span className="text-xs text-[#6B6B6B] block mt-0.5">{q.sub}</span>
