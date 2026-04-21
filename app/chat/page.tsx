@@ -36,7 +36,7 @@ export default function ChatPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F6FF]">
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F4EF]">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -47,7 +47,7 @@ export default function ChatPage() {
       <Header user={user} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar user={user} onQuick={sendMessage} onNew={newConversation} />
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#F7F6FF]">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#F5F4EF]">
           <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4 scrollbar-thin">
             {messages.length === 0 ? (
               <WelcomeScreen name={user.name?.split(' ')[0] ?? ''} grade={user.grade ?? ''} onQuick={sendMessage} />
