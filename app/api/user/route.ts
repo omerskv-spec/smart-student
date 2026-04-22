@@ -15,7 +15,6 @@ async function verifyToken(request: NextRequest): Promise<DecodedToken | null> {
   const token = authHeader.split('Bearer ')[1];
   
   try {
-    // Use Firebase Identity Toolkit REST API to verify ID token
     const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     const res = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
@@ -26,7 +25,7 @@ async function verifyToken(request: NextRequest): Promise<DecodedToken | null> {
       }
     );
     if (!res.ok) {
-      console.error('Firebase token lookup failed:', res.status);
+      console.error('Firebase token lookup failed:', res.status, await res.text());
       return null;
     }
     const data = await res.json();
@@ -51,31 +50,38 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  const { data, error } = await supabase
+  // Upsert: insert if not exists, return current
+  const { data: upserted, error: upsertError } = await supabase
     .from('users')
-    .select('*')
-    .eq('id', decoded.uid)
+    .upsert(
+      {
+        id: decoded.uid,
+        email: decoded.email,
+        name: decoded.name,
+        avatar_url: decoded.photo,
+        onboarding_complete: false,
+      },
+      { onConflict: 'id', ignoreDuplicates: true }
+    )
+    .select()
     .single();
 
-  if (error && error.code === 'PGRST116') {
-    const newUser = {
-      id: decoded.uid,
-      email: decoded.email,
-      name: decoded.name,
-      avatar_url: decoded.photo,
-      onboarding_complete: false,
-    };
-    const { data: created, error: createError } = await supabase
+  if (upsertError) {
+    console.error('Upsert error:', upsertError);
+    // If upsert failed (e.g. conflict), just fetch the existing user
+    const { data: existing, error: fetchError } = await supabase
       .from('users')
-      .insert(newUser)
-      .select()
+      .select('*')
+      .eq('id', decoded.uid)
       .single();
-    if (createError) return NextResponse.json({ error: 'Error creating user' }, { status: 500 });
-    return NextResponse.json(created);
+    if (fetchError || !existing) {
+      console.error('Fetch after upsert error:', fetchError);
+      return NextResponse.json({ error: 'Error fetching user' }, { status: 500 });
+    }
+    return NextResponse.json(existing);
   }
 
-  if (error) return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  return NextResponse.json(data);
+  return NextResponse.json(upserted);
 }
 
 export async function POST(request: NextRequest) {
@@ -99,6 +105,9 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: 'Error saving data' }, { status: 500 });
+  if (error) {
+    console.error('Update error:', error);
+    return NextResponse.json({ error: 'Error saving data' }, { status: 500 });
+  }
   return NextResponse.json(data);
 }
