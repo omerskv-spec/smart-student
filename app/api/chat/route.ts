@@ -6,12 +6,23 @@ import { AGENT_LABELS } from '@/agents/subjects/index';
 
 async function verifyToken(token: string): Promise<{ uid: string; email: string } | null> {
   try {
-    const res = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`);
-    if (!res.ok) return null;
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token }),
+      }
+    );
+    if (!res.ok) {
+      console.error('Firebase token lookup failed:', res.status);
+      return null;
+    }
     const data = await res.json();
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (data.aud !== projectId) return null;
-    return { uid: data.sub, email: data.email || '' };
+    const user = data.users?.[0];
+    if (!user) return null;
+    return { uid: user.localId, email: user.email || '' };
   } catch (err) {
     console.error('Token verification error:', err);
     return null;
