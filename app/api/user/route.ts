@@ -15,20 +15,29 @@ async function verifyToken(request: NextRequest): Promise<DecodedToken | null> {
   const token = authHeader.split('Bearer ')[1];
   
   try {
-    // Use Google's tokeninfo endpoint to verify Firebase ID tokens
-    const res = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`);
-    if (!res.ok) return null;
+    // Use Firebase Identity Toolkit REST API to verify ID token
+    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token }),
+      }
+    );
+    if (!res.ok) {
+      console.error('Firebase token lookup failed:', res.status);
+      return null;
+    }
     const data = await res.json();
-    
-    // Verify it's for our Firebase project
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    if (data.aud !== projectId) return null;
+    const user = data.users?.[0];
+    if (!user) return null;
     
     return {
-      uid: data.sub,
-      email: data.email || '',
-      name: data.name || null,
-      photo: data.picture || null,
+      uid: user.localId,
+      email: user.email || '',
+      name: user.displayName || null,
+      photo: user.photoUrl || null,
     };
   } catch (err) {
     console.error('Token verification error:', err);
@@ -42,7 +51,6 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  // Try to get existing user
   const { data, error } = await supabase
     .from('users')
     .select('*')
@@ -50,7 +58,6 @@ export async function GET(request: NextRequest) {
     .single();
 
   if (error && error.code === 'PGRST116') {
-    // User not found — create new user (first login)
     const newUser = {
       id: decoded.uid,
       email: decoded.email,
