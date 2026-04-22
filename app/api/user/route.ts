@@ -1,30 +1,37 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { createServiceClient } from '@/lib/supabase';
 
-function initFirebase() {
-  if (!getApps().length) {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-  }
-  return getAuth();
+interface DecodedToken {
+  uid: string;
+  email: string;
+  name: string | null;
+  photo: string | null;
 }
 
-async function verifyToken(request: NextRequest): Promise<{ uid: string; email: string; name: string | null; photo: string | null } | null> {
+async function verifyToken(request: NextRequest): Promise<DecodedToken | null> {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.split('Bearer ')[1];
+  
   try {
-    const token = authHeader.split('Bearer ')[1];
-    const decoded = await initFirebase().verifyIdToken(token);
-    return { uid: decoded.uid, email: decoded.email || '', name: decoded.name || null, photo: decoded.picture || null };
-  } catch {
+    // Use Google's tokeninfo endpoint to verify Firebase ID tokens
+    const res = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    
+    // Verify it's for our Firebase project
+    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (data.aud !== projectId) return null;
+    
+    return {
+      uid: data.sub,
+      email: data.email || '',
+      name: data.name || null,
+      photo: data.picture || null,
+    };
+  } catch (err) {
+    console.error('Token verification error:', err);
     return null;
   }
 }
@@ -34,10 +41,14 @@ export async function GET(request: NextRequest) {
   if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();
-  
+
   // Try to get existing user
-  const { data, error } = await supabase.from('users').select('*').eq('id', decoded.uid).single();
-  
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', decoded.uid)
+    .single();
+
   if (error && error.code === 'PGRST116') {
     // User not found — create new user (first login)
     const newUser = {
@@ -55,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (createError) return NextResponse.json({ error: 'Error creating user' }, { status: 500 });
     return NextResponse.json(created);
   }
-  
+
   if (error) return NextResponse.json({ error: 'User not found' }, { status: 404 });
   return NextResponse.json(data);
 }
@@ -66,15 +77,21 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const { grade, track, subjects, onboarding_complete } = body;
-  
+
   const supabase = createServiceClient();
   const { data, error } = await supabase
     .from('users')
-    .update({ grade, track, subjects, onboarding_complete: onboarding_complete ?? true, updated_at: new Date().toISOString() })
+    .update({
+      grade,
+      track,
+      subjects,
+      onboarding_complete: onboarding_complete ?? true,
+      updated_at: new Date().toISOString()
+    })
     .eq('id', decoded.uid)
     .select()
     .single();
-    
+
   if (error) return NextResponse.json({ error: 'Error saving data' }, { status: 500 });
   return NextResponse.json(data);
 }
