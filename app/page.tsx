@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { auth, googleProvider } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,13 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Handle redirect result on page load
+    getRedirectResult(auth).catch((err) => {
+      console.error('Redirect result error:', err);
+    });
+  }, []);
+
+  useEffect(() => {
     if (!authLoading && user) {
       router.push(user.onboarding_complete ? '/chat' : '/onboarding');
     }
@@ -21,12 +28,11 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithRedirect(auth, googleProvider);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'שגיאה בהתחברות';
       setError('שגיאה בהתחברות. נסה שוב.');
       console.error(message);
-    } finally {
       setLoading(false);
     }
   };
