@@ -21,7 +21,7 @@ export default function ChatPage() {
     firebaseUser?.getIdToken().then(setToken);
   }, [firebaseUser]);
 
-  const { messages, loading, error, sendMessage, newConversation } = useChat(
+  const { messages, loading, error, newMessageId, sendMessage, newConversation } = useChat(
     user?.id ?? '',
     token
   );
@@ -51,14 +51,27 @@ export default function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F5F4EF]">
           <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4 scrollbar-thin">
             {messages.filter(Boolean).length === 0 ? (
-              <WelcomeScreen name={user.name?.split(' ')[0] ?? ''} grade={user.grade ?? ''} onQuick={sendMessage} />
+              <WelcomeScreen
+                name={user.name?.split(' ')[0] ?? ''}
+                grade={user.grade ?? ''}
+                onQuick={sendMessage}
+              />
             ) : (
               messages.filter(Boolean).map(m => (
-                <MessageBubble key={m.id} message={m} avatarUrl={user.avatar_url ?? undefined} />
+                <MessageBubble
+                  key={m.id}
+                  message={m}
+                  avatarUrl={user.avatar_url ?? undefined}
+                  isNew={m.id === newMessageId}
+                />
               ))
             )}
             {loading && <TypingIndicator />}
-            {error && <p className="text-center text-red-500 text-sm bg-red-50 px-4 py-2 rounded-xl">{error}</p>}
+            {error && (
+              <p className="text-center text-red-500 text-sm bg-red-50 px-4 py-2 rounded-xl">
+                {error}
+              </p>
+            )}
             <div ref={bottomRef} />
           </div>
           <InputBar onSend={sendMessage} disabled={loading} />
@@ -66,4 +79,4 @@ export default function ChatPage() {
       </div>
     </div>
   );
-}
+    }
