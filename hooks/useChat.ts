@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Message, Conversation } from '@/types';
@@ -22,7 +21,6 @@ export function useChat(userId: string | null, idToken: string | null) {
     sending: false,
     error: null,
   });
-  
   const abortRef = useRef<AbortController | null>(null);
 
   const loadConversations = useCallback(async () => {
@@ -43,28 +41,29 @@ export function useChat(userId: string | null, idToken: string | null) {
       .select('*')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
-    setState(prev => ({ ...prev, messages: (data as Message[]) || [], loading: false }));
+    setState(prev => ({ ...prev, messages: ((data as Message[]) || []).filter(Boolean), loading: false }));
   }, []);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!idToken || !content.trim() || state.sending) return;
-    
-    // Prevent double submission
+
     if (abortRef.current) abortRef.current.abort();
     abortRef.current = new AbortController();
-    
+
+    const now = new Date().toISOString();
+    const tempId = 'temp-' + Date.now();
+
     const tempUserMsg: Message = {
-      id: 'temp-' + Date.now(),
+      id: tempId,
       conversation_id: state.currentConversationId || '',
       role: 'user',
       content,
-      created_at: new Date().toISOString(),
+      created_at: now,
     };
 
-    // Optimistic update
     setState(prev => ({
       ...prev,
-      messages: [...prev.messages, tempUserMsg],
+      messages: [...prev.messages, tempUserMsg].filter(Boolean),
       sending: true,
       error: null,
     }));
@@ -88,20 +87,52 @@ export function useChat(userId: string | null, idToken: string | null) {
       }
 
       const result = await response.json();
-      
+      // API returns: { reply, conversationId, agentUsed, agentLabel }
+      const replyText = result?.reply ?? '';
+      const convId = result?.conversationId ?? state.currentConversationId ?? '';
+      const replyTime = new Date().toISOString();
+
+      const confirmedUserMsg: Message = {
+        id: 'user-' + Date.now(),
+        conversation_id: convId,
+        role: 'user',
+        content,
+        created_at: now,
+      };
+
+      const botMsg: Message = {
+        id: 'bot-' + Date.now(),
+        conversation_id: convId,
+        role: 'assistant',
+        content: replyText,
+        created_at: replyTime,
+      };
+
       setState(prev => {
-        const msgs = prev.messages.filter(m => m.id !== tempUserMsg.id);
+        const filtered = prev.messages.filter(m => m && m.id !== tempId);
+        const newMsgs = [...filtered, confirmedUserMsg, botMsg].filter(Boolean);
+        const convExists = prev.conversations.some(c => c.id === convId);
+        const updatedConvs = convExists
+          ? prev.conversations.map(c =>
+              c.id === convId
+                ? { ...c, last_message_at: replyTime }
+                : c
+            )
+          : [
+              {
+                id: convId,
+                user_id: userId!,
+                title: content.slice(0, 40),
+                last_message_at: replyTime,
+                created_at: replyTime,
+              },
+              ...prev.conversations,
+            ];
         return {
           ...prev,
-          messages: [...msgs, result.userMessage, result.assistantMessage],
-          currentConversationId: result.conversationId,
-          conversations: prev.conversations.some(c => c.id === result.conversationId)
-            ? prev.conversations.map(c => 
-                c.id === result.conversationId 
-                  ? { ...c, last_message_at: result.assistantMessage.created_at, title: result.conversationTitle || c.title }
-                  : c
-              )
-            : [{ id: result.conversationId, user_id: userId!, title: result.conversationTitle || 'שיחה חדשה', last_message_at: result.assistantMessage.created_at, created_at: result.assistantMessage.created_at }, ...prev.conversations],
+          messages: newMsgs,
+          currentConversationId: convId,
+          conversations: updatedConvs,
           sending: false,
         };
       });
@@ -109,7 +140,7 @@ export function useChat(userId: string | null, idToken: string | null) {
       if ((err as { name: string }).name === 'AbortError') return;
       setState(prev => ({
         ...prev,
-        messages: prev.messages.filter(m => m.id !== tempUserMsg.id),
+        messages: prev.messages.filter(m => m && m.id !== tempId),
         sending: false,
         error: 'שגיאה בשליחת ההודעה. נסה שוב.',
       }));
@@ -117,12 +148,7 @@ export function useChat(userId: string | null, idToken: string | null) {
   }, [idToken, state.sending, state.currentConversationId, userId]);
 
   const newConversation = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      messages: [],
-      currentConversationId: null,
-      error: null,
-    }));
+    setState(prev => ({ ...prev, messages: [], currentConversationId: null, error: null }));
   }, []);
 
   return { ...state, loadConversations, loadMessages, sendMessage, newConversation };
