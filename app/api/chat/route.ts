@@ -5,9 +5,10 @@ import { AGENT_LABELS } from '@/agents/subjects/index';
 
 export const dynamic = 'force-dynamic';
 
+// Hardcoded to bypass stale Vercel env vars
 const db = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  'https://tvckyeplbdemdpnzxhni.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2t5ZXBsYmRlbWRwbnp4aG5pIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDk1NTk3MCwiZXhwIjoyMDkwNTMxOTcwfQ.9taeVXMWyiqa_koKoI_qXzhNO4ittHJG9dPOxh1pMas'
 );
 
 // Firebase web API key - hardcoded to bypass stale env var
