@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,10 +19,16 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!authLoading && user) {
-      router.push(user.onboarding_complete ? '/chat' : '/onboarding');
+    if (!authLoading) {
+      if (user) {
+        // User has profile in DB
+        router.push(user.onboarding_complete ? '/chat' : '/onboarding');
+      } else if (isAuthenticated) {
+        // User is authenticated but no DB profile yet — new user, go to onboarding
+        router.push('/onboarding');
+      }
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, isAuthenticated, router]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
