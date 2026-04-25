@@ -22,7 +22,8 @@ export default function ChatPage() {
   }, [firebaseUser]);
 
   const { messages, loading, error, sendMessage, newConversation } = useChat(
-    user?.id ?? '', token
+    user?.id ?? '',
+    token
   );
 
   useEffect(() => {
@@ -49,10 +50,12 @@ export default function ChatPage() {
         <Sidebar user={user} onQuick={sendMessage} onNew={newConversation} />
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F5F4EF]">
           <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4 scrollbar-thin">
-            {messages.length === 0 ? (
+            {messages.filter(Boolean).length === 0 ? (
               <WelcomeScreen name={user.name?.split(' ')[0] ?? ''} grade={user.grade ?? ''} onQuick={sendMessage} />
             ) : (
-              messages.map(m => <MessageBubble key={m.id} message={m} avatarUrl={user.avatar_url ?? undefined} />)
+              messages.filter(Boolean).map(m => (
+                <MessageBubble key={m.id} message={m} avatarUrl={user.avatar_url ?? undefined} />
+              ))
             )}
             {loading && <TypingIndicator />}
             {error && <p className="text-center text-red-500 text-sm bg-red-50 px-4 py-2 rounded-xl">{error}</p>}
