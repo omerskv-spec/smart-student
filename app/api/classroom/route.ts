@@ -8,9 +8,12 @@ const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Firebase web API key - hardcoded to bypass stale env var
+const FIREBASE_API_KEY = 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
+
 async function getFirebaseUser(token: string) {
   const r = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: token }) }
   );
   const d = await r.json();
@@ -21,8 +24,10 @@ export async function GET(req: NextRequest) {
   try {
     const token = req.headers.get('Authorization')?.replace('Bearer ', '');
     if (!token) return NextResponse.json({ formatted: '' });
+
     const fu = await getFirebaseUser(token);
     if (!fu) return NextResponse.json({ formatted: '' });
+
     const uid = fu.localId;
 
     const { data: cache } = await db
@@ -53,13 +58,18 @@ export async function GET(req: NextRequest) {
         if (works.length) {
           formatted += `${course.name}:\n`;
           works.forEach((w: { title: string; dueDate?: { day: number; month: number } }) => {
-            formatted += `  - ${w.title}${w.dueDate ? ` (${w.dueDate.day}/${w.dueDate.month})` : ''}\n`;
+            formatted += ` - ${w.title}${w.dueDate ? ` (${w.dueDate.day}/${w.dueDate.month})` : ''}\n`;
           });
         }
       } catch { continue; }
     }
 
-    await db.from('classroom_cache').upsert({ user_id: uid, data: { formatted }, updated_at: new Date().toISOString() });
+    await db.from('classroom_cache').upsert({
+      user_id: uid,
+      data: { formatted },
+      updated_at: new Date().toISOString()
+    });
+
     return NextResponse.json({ formatted });
   } catch (err) {
     console.error('/api/classroom:', err);
