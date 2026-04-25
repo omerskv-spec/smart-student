@@ -32,19 +32,19 @@ body {
   --radius-msg: 18px;
 }
 
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+
+::selection { background: rgba(217,119,6,0.15); }
+
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(200%); }
+  100% { transform: translateX(200%); }
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.12);
-  border-radius: 4px;
-}
-
-::selection {
-  background: rgba(217,119,6,0.15);
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
