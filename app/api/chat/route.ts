@@ -10,8 +10,8 @@ const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Firebase web API key (public - safe to embed)
-const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
+// Firebase web API key - hardcoded to bypass stale env var
+const FIREBASE_API_KEY = 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
 
 async function getFirebaseUser(token: string) {
   const r = await fetch(
@@ -19,7 +19,10 @@ async function getFirebaseUser(token: string) {
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: token }) }
   );
   const d = await r.json();
-  if (!r.ok) { console.error('Firebase lookup error:', d); return null; }
+  if (!r.ok) {
+    console.error('Firebase lookup error:', d);
+    return null;
+  }
   return d.users?.[0] ?? null;
 }
 
@@ -27,10 +30,12 @@ export async function POST(req: NextRequest) {
   try {
     const token = req.headers.get('Authorization')?.replace('Bearer ', '');
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const fu = await getFirebaseUser(token);
     if (!fu) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
     const uid = fu.localId;
+
     const { message, conversationId } = await req.json();
     if (!message?.trim()) return NextResponse.json({ error: 'Empty message' }, { status: 400 });
 
