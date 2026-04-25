@@ -1,24 +1,50 @@
 'use client';
 import { useState } from 'react';
-import { SYSTEM_LINKS, REFERENCE_LINKS, SUBJECTS } from '@/lib/constants';
+import { SUBJECTS } from '@/lib/constants';
 import { Toast } from '@/components/ui/Toast';
 import type { User } from '@/types';
 
-interface Props { user: User; onQuick: (msg: string) => void; onNew: () => void; }
+interface Props {
+  user: User;
+  onQuick: (msg: string) => void;
+  onNew: () => void;
+}
 
 const QUICK_ACTIONS = [
-  { icon: '📋', label: 'מה יש לי השבוע?', msg: 'מה יש לי להגיש השבוע?' },
-  { icon: '💡', label: 'לא הבנתי משהו', msg: 'לא הבנתי את החומר בשיעור' },
-  { icon: '✏️', label: 'שיעורי בית', msg: 'תעזור לי עם שיעורי הבית שלי' },
-  { icon: '🎯', label: 'הכנה למבחן', msg: 'מתי המבחן הבא ואיך אני מתכונן?' },
+  { label: 'מה יש לי השבוע?', msg: 'מה יש לי להגיש השבוע?' },
+  { label: 'לא הבנתי משהו', msg: 'לא הבנתי את החומר בשיעור' },
+  { label: 'שיעורי בית', msg: 'תעזור לי עם שיעורי הבית שלי' },
+  { label: 'הכנה למבחן', msg: 'מתי המבחן הבא ואיך אני מתכונן?' },
 ];
+
+const SYSTEM_LINKS = [
+  { name: 'Google Classroom', url: 'https://classroom.google.com' },
+  { name: 'Webtop', url: 'https://webtop.smartschool.co.il' },
+  { name: 'Campus Virtual', url: 'https://mvc.cet.ac.il' },
+  { name: 'Classoos', url: 'https://my.classoos.com' },
+  { name: 'Ofek', url: 'https://students.myofek.cet.ac.il' },
+  { name: 'Classe', url: 'https://www.classe.world' },
+];
+
+const REFERENCE_LINKS: Record<string, string> = {
+  math: 'https://www.matematica.co.il',
+  physics: 'https://davidson.weizmann.ac.il/online/physics',
+  chemistry: 'https://davidson.weizmann.ac.il/online/chemistry',
+  biology: 'https://davidson.weizmann.ac.il/online/biology',
+  hebrew: 'https://hebrew.cet.ac.il',
+  history: 'https://history.cet.ac.il',
+  civics: 'https://civics.cet.ac.il',
+  literature: 'https://literature.cet.ac.il',
+  bible: 'https://www.safa-ivrit.org/bible',
+  english: 'https://www.cet.ac.il/web/english',
+};
 
 export function Sidebar({ user, onQuick, onNew }: Props) {
   const [toast, setToast] = useState('');
 
   const openLink = (url: string, label: string) => {
     window.open(url, '_blank');
-    setToast(`פותח ${label}... חזור לשאול שאלות 💡`);
+    setToast(`פותח ${label}... חזור לשאול שאלות`);
   };
 
   const userSubjects = SUBJECTS.filter(s => user.subjects?.includes(s.id));
@@ -26,38 +52,54 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
   return (
     <aside className="w-64 bg-[#EEEEE8] border-l border-[rgba(0,0,0,0.08)] flex flex-col overflow-y-auto scrollbar-thin flex-shrink-0">
       <div className="p-3">
-        <button onClick={onNew} className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-white text-sm font-medium rounded-xl transition-all">
-          <span className="text-base">+</span> שיחה חדשה
+        <button
+          onClick={onNew}
+          className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#1A1A1A] hover:bg-[#2A2A2A] text-white text-sm font-medium rounded-xl transition-all"
+        >
+          <span className="text-base">+</span>
+          שיחה חדשה
         </button>
       </div>
 
       <nav className="flex-1 px-2 pb-4">
         <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2 mt-1">קיצורים</p>
         {QUICK_ACTIONS.map(a => (
-          <button key={a.msg} onClick={() => onQuick(a.msg)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
-            <span>{a.icon}</span><span>{a.label}</span>
+          <button
+            key={a.msg}
+            onClick={() => onQuick(a.msg)}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[rgba(0,0,0,0.2)] flex-shrink-0" />
+            <span>{a.label}</span>
           </button>
         ))}
 
-        <hr className="my-3 border-[var(--border)]" />
+        <hr className="my-3 border-[rgba(0,0,0,0.08)]" />
 
         <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2">המערכות שלי</p>
         {SYSTEM_LINKS.map(l => (
-          <button key={l.url} onClick={() => openLink(l.url, l.name)}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
-            <span>{l.emoji}</span><span>{l.name}</span>
+          <button
+            key={l.url}
+            onClick={() => openLink(l.url, l.name)}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[rgba(0,0,0,0.15)] flex-shrink-0" />
+            <span>{l.name}</span>
           </button>
         ))}
 
         {userSubjects.length > 0 && (
           <>
-            <hr className="my-3 border-[var(--border)]" />
+            <hr className="my-3 border-[rgba(0,0,0,0.08)]" />
             <p className="text-[#9B9B9B] text-[10px] uppercase tracking-widest px-2 py-2">חומר עזר</p>
             {userSubjects.map(s => (
-              <button key={s.id} onClick={() => openLink(REFERENCE_LINKS[s.id], s.name)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right">
-                <span>{s.emoji}</span><span>{s.name}</span>
+              <button
+                key={s.id}
+                onClick={() => openLink(REFERENCE_LINKS[s.id] || '#', s.name)}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-[#6B6B6B] hover:bg-[rgba(0,0,0,0.06)] hover:text-[#1A1A1A] transition-all text-right"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[rgba(0,0,0,0.15)] flex-shrink-0" />
+                <span>{s.name}</span>
               </button>
             ))}
           </>
@@ -67,4 +109,4 @@ export function Sidebar({ user, onQuick, onNew }: Props) {
       {toast && <Toast message={toast} onDone={() => setToast('')} />}
     </aside>
   );
-}
+        }
