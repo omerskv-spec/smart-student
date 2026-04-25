@@ -8,8 +8,8 @@ const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Firebase web API key (public - safe to embed)
-const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
+// Firebase web API key - public key, safe to embed in server code
+const FIREBASE_API_KEY = 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
 
 async function getFirebaseUser(token: string) {
   const r = await fetch(
@@ -18,7 +18,7 @@ async function getFirebaseUser(token: string) {
   );
   const d = await r.json();
   if (!r.ok) {
-    console.error('Firebase lookup error:', d);
+    console.error('Firebase lookup error:', JSON.stringify(d));
     return null;
   }
   return d.users?.[0] ?? null;
@@ -41,7 +41,6 @@ export async function GET(req: NextRequest) {
     onboarding_complete: false,
   };
 
-  // Try insert — if exists (23505), just select
   const { error: insertErr } = await db.from('users').insert(newUser);
 
   if (insertErr && insertErr.code !== '23505') {
