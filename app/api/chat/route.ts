@@ -10,13 +10,17 @@ const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Firebase web API key (public - safe to embed)
+const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY';
+
 async function getFirebaseUser(token: string) {
   const r = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: token }) }
   );
   const d = await r.json();
-  return r.ok ? d.users?.[0] ?? null : null;
+  if (!r.ok) { console.error('Firebase lookup error:', d); return null; }
+  return d.users?.[0] ?? null;
 }
 
 export async function POST(req: NextRequest) {
