@@ -1,113 +1,72 @@
-export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface DecodedToken {
-  uid: string;
-  email: string;
-  name: string | null;
-  photo: string | null;
+export const dynamic = 'force-dynamic';
+
+const db = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+async function getFirebaseUser(token: string) {
+  const r = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: token }) }
+  );
+  const d = await r.json();
+  return r.ok ? d.users?.[0] ?? null : null;
 }
 
-async function verifyToken(request: NextRequest): Promise<DecodedToken | null> {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-  const token = authHeader.split('Bearer ')[1];
-  
-  try {
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    const res = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken: token }),
-      }
-    );
-    if (!res.ok) {
-      console.error('Firebase token lookup failed:', res.status, await res.text());
-      return null;
-    }
-    const data = await res.json();
-    const user = data.users?.[0];
-    if (!user) return null;
-    
-    return {
-      uid: user.localId,
-      email: user.email || '',
-      name: user.displayName || null,
-      photo: user.photoUrl || null,
-    };
-  } catch (err) {
-    console.error('Token verification error:', err);
-    return null;
-  }
-}
+export async function GET(req: NextRequest) {
+  const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+  if (!token) return NextResponse.json({ error: 'No token' }, { status: 401 });
+  const fu = await getFirebaseUser(token);
+  if (!fu) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-export async function GET(request: NextRequest) {
-  const decoded = await verifyToken(request);
-  if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const newUser = {
+    id: fu.localId,
+    email: fu.email ?? '',
+    name: fu.displayName ?? '',
+    avatar_url: fu.photoUrl ?? '',
+    grade: '',
+    track: 'כללי',
+    subjects: [],
+    onboarding_complete: false,
+  };
 
-  const supabase = createServiceClient();
+  // Try insert — if exists (23505), just select
+  const { error: insertErr } = await db.from('users').insert(newUser);
 
-  // Upsert: insert if not exists, return current
-  const { data: upserted, error: upsertError } = await supabase
-    .from('users')
-    .upsert(
-      {
-        id: decoded.uid,
-        email: decoded.email,
-        name: decoded.name,
-        avatar_url: decoded.photo,
-        onboarding_complete: false,
-      },
-      { onConflict: 'id', ignoreDuplicates: true }
-    )
-    .select()
-    .single();
-
-  if (upsertError) {
-    console.error('Upsert error:', upsertError);
-    // If upsert failed (e.g. conflict), just fetch the existing user
-    const { data: existing, error: fetchError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', decoded.uid)
-      .single();
-    if (fetchError || !existing) {
-      console.error('Fetch after upsert error:', fetchError);
-      return NextResponse.json({ error: 'Error fetching user' }, { status: 500 });
-    }
-    return NextResponse.json(existing);
+  if (insertErr && insertErr.code !== '23505') {
+    console.error('Insert error:', insertErr);
+    return NextResponse.json({ error: insertErr.message, code: insertErr.code }, { status: 500 });
   }
 
-  return NextResponse.json(upserted);
+  const { data, error: selectErr } = await db.from('users').select('*').eq('id', fu.localId).single();
+  if (selectErr) {
+    console.error('Select error:', selectErr);
+    return NextResponse.json({ error: selectErr.message }, { status: 500 });
+  }
+  return NextResponse.json(data);
 }
 
-export async function POST(request: NextRequest) {
-  const decoded = await verifyToken(request);
-  if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function POST(req: NextRequest) {
+  const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+  if (!token) return NextResponse.json({ error: 'No token' }, { status: 401 });
+  const fu = await getFirebaseUser(token);
+  if (!fu) return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 
-  const body = await request.json();
-  const { grade, track, subjects, onboarding_complete } = body;
-
-  const supabase = createServiceClient();
-  const { data, error } = await supabase
+  const body = await req.json();
+  const { data, error } = await db
     .from('users')
-    .update({
-      grade,
-      track,
-      subjects,
-      onboarding_complete: onboarding_complete ?? true,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', decoded.uid)
+    .update(body)
+    .eq('id', fu.localId)
     .select()
     .single();
 
   if (error) {
     console.error('Update error:', error);
-    return NextResponse.json({ error: 'Error saving data' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json(data);
 }
