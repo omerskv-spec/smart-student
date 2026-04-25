@@ -10,6 +10,7 @@ interface ChatState {
   loading: boolean;
   sending: boolean;
   error: string | null;
+  newMessageId: string | null;
 }
 
 export function useChat(userId: string | null, idToken: string | null) {
@@ -20,7 +21,9 @@ export function useChat(userId: string | null, idToken: string | null) {
     loading: false,
     sending: false,
     error: null,
+    newMessageId: null,
   });
+
   const abortRef = useRef<AbortController | null>(null);
 
   const loadConversations = useCallback(async () => {
@@ -41,7 +44,11 @@ export function useChat(userId: string | null, idToken: string | null) {
       .select('*')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: true });
-    setState(prev => ({ ...prev, messages: ((data as Message[]) || []).filter(Boolean), loading: false }));
+    setState(prev => ({
+      ...prev,
+      messages: ((data as Message[]) || []).filter(Boolean),
+      loading: false,
+    }));
   }, []);
 
   const sendMessage = useCallback(async (content: string) => {
@@ -66,6 +73,7 @@ export function useChat(userId: string | null, idToken: string | null) {
       messages: [...prev.messages, tempUserMsg].filter(Boolean),
       sending: true,
       error: null,
+      newMessageId: null,
     }));
 
     try {
@@ -87,7 +95,6 @@ export function useChat(userId: string | null, idToken: string | null) {
       }
 
       const result = await response.json();
-      // API returns: { reply, conversationId, agentUsed, agentLabel }
       const replyText = result?.reply ?? '';
       const convId = result?.conversationId ?? state.currentConversationId ?? '';
       const replyTime = new Date().toISOString();
@@ -100,8 +107,9 @@ export function useChat(userId: string | null, idToken: string | null) {
         created_at: now,
       };
 
+      const botMsgId = 'bot-' + Date.now();
       const botMsg: Message = {
-        id: 'bot-' + Date.now(),
+        id: botMsgId,
         conversation_id: convId,
         role: 'assistant',
         content: replyText,
@@ -111,12 +119,11 @@ export function useChat(userId: string | null, idToken: string | null) {
       setState(prev => {
         const filtered = prev.messages.filter(m => m && m.id !== tempId);
         const newMsgs = [...filtered, confirmedUserMsg, botMsg].filter(Boolean);
+
         const convExists = prev.conversations.some(c => c.id === convId);
         const updatedConvs = convExists
           ? prev.conversations.map(c =>
-              c.id === convId
-                ? { ...c, last_message_at: replyTime }
-                : c
+              c.id === convId ? { ...c, last_message_at: replyTime } : c
             )
           : [
               {
@@ -128,14 +135,22 @@ export function useChat(userId: string | null, idToken: string | null) {
               },
               ...prev.conversations,
             ];
+
         return {
           ...prev,
           messages: newMsgs,
           currentConversationId: convId,
           conversations: updatedConvs,
           sending: false,
+          newMessageId: botMsgId,
         };
       });
+
+      // Clear new message highlight after animation completes
+      setTimeout(() => {
+        setState(prev => ({ ...prev, newMessageId: null }));
+      }, 5000);
+
     } catch (err: unknown) {
       if ((err as { name: string }).name === 'AbortError') return;
       setState(prev => ({
@@ -143,13 +158,14 @@ export function useChat(userId: string | null, idToken: string | null) {
         messages: prev.messages.filter(m => m && m.id !== tempId),
         sending: false,
         error: 'שגיאה בשליחת ההודעה. נסה שוב.',
+        newMessageId: null,
       }));
     }
   }, [idToken, state.sending, state.currentConversationId, userId]);
 
   const newConversation = useCallback(() => {
-    setState(prev => ({ ...prev, messages: [], currentConversationId: null, error: null }));
+    setState(prev => ({ ...prev, messages: [], currentConversationId: null, error: null, newMessageId: null }));
   }, []);
 
   return { ...state, loadConversations, loadMessages, sendMessage, newConversation };
-}
+             }
