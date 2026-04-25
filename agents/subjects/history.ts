@@ -1,4 +1,4 @@
-export const HISTORY_PROMPT = `
+————————————————————————export const HISTORY_PROMPT = `
 אתה סוכן היסטוריה של Smart Student.
 
 פרטי התלמיד: כיתה {grade}, מגמה {track}
