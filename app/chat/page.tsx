@@ -17,14 +17,27 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [token, setToken] = useState('');
 
+  // Refresh token on mount and every 45 minutes to prevent 401 errors
   useEffect(() => {
-    firebaseUser?.getIdToken().then(setToken);
+    if (!firebaseUser) return;
+    const refresh = async () => {
+      const t = await firebaseUser.getIdToken(true);
+      setToken(t);
+    };
+    refresh();
+    const interval = setInterval(refresh, 45 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [firebaseUser]);
 
-  const { messages, loading, error, newMessageId, sendMessage, newConversation } = useChat(
-    user?.id ?? '',
-    token
-  );
+  const {
+    messages,
+    loading,
+    error,
+    newMessageId,
+    currentConversationId,
+    sendMessage,
+    newConversation,
+  } = useChat(user?.id ?? '', token);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/');
@@ -74,9 +87,14 @@ export default function ChatPage() {
             )}
             <div ref={bottomRef} />
           </div>
-          <InputBar onSend={sendMessage} disabled={loading} />
+          <InputBar
+            onSend={sendMessage}
+            disabled={loading}
+            token={token}
+            conversationId={currentConversationId ?? null}
+          />
         </div>
       </div>
     </div>
   );
-    }
+}
