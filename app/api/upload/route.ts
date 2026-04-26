@@ -41,12 +41,8 @@ async function extractText(file: File): Promise<string> {
   if (file.type.startsWith('image/')) {
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    let binary = '';
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
-    }
-    const base64 = btoa(binary);
+    // Use Buffer.from for safe base64 encoding without spread operator issues
+    const base64 = Buffer.from(bytes).toString('base64');
     return `IMAGE:${file.type}:${base64}`;
   }
 
