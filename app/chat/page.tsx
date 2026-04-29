@@ -37,7 +37,7 @@ export default function ChatPage() {
     currentConversationId,
     sendMessage,
     newConversation,
-  } = useChat(user?.id ?? '', token);
+  } = useChat(user?.id ?? '', token, firebaseUser);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/');
