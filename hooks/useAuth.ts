@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { User as FirebaseUser, onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { onAuthStateChanged, getRedirectResult, User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import type { User } from '@/types';
 
 interface AuthState {
@@ -9,6 +9,24 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+}
+
+async function fetchOrCreateUser(firebaseUser: FirebaseUser): Promise<User | null> {
+  try {
+    const token = await firebaseUser.getIdToken(true);
+    const res = await fetch('/api/user', {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.error('fetchOrCreateUser failed:', res.status, await res.text());
+      return null;
+    }
+    return await res.json() as User;
+  } catch (err) {
+    console.error('fetchOrCreateUser error:', err);
+    return null;
+  }
 }
 
 export function useAuth() {
@@ -19,78 +37,42 @@ export function useAuth() {
     error: null,
   });
 
-  const fetchUserProfile = useCallback(async (firebaseUser: FirebaseUser) => {
-    try {
-      const token = await firebaseUser.getIdToken();
-      const res = await fetch('/api/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setState(prev => ({ ...prev, user: data as User, loading: false }));
-    } catch (err) {
-      console.error('Error fetching user profile:', err);
-      setState(prev => ({ ...prev, error: 'שגיאה בטעינת הפרופיל', loading: false }));
-    }
+  const loadUser = useCallback(async (fbUser: FirebaseUser) => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
+    const user = await fetchOrCreateUser(fbUser);
+    setState({ firebaseUser: fbUser, user, loading: false, error: null });
   }, []);
 
   useEffect(() => {
-    // Handle redirect result on app load (after Google redirects back)
+    // Handle redirect result first
     getRedirectResult(auth)
-      .then((result) => {
+      .then(result => {
         if (result?.user) {
-          // Auth state change will fire, fetchUserProfile will be called
-          console.log('Redirect sign-in success:', result.user.email);
+          loadUser(result.user);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.error('getRedirectResult error:', err);
-        setState(prev => ({ ...prev, loading: false }));
+        setState(prev => ({ ...prev, loading: false, error: err.message }));
       });
-  }, []);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setState(prev => ({ ...prev, firebaseUser, loading: true }));
-        await fetchUserProfile(firebaseUser);
+    // Then subscribe to auth state changes
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
+      if (fbUser) {
+        await loadUser(fbUser);
       } else {
         setState({ firebaseUser: null, user: null, loading: false, error: null });
       }
     });
-    return unsubscribe;
-  }, [fetchUserProfile]);
 
-  const signIn = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
-    try {
-      await signInWithRedirect(auth, googleProvider);
-    } catch (err: unknown) {
-      const error = err as { code?: string; message?: string };
-      console.error('signInWithRedirect error:', error);
-      setState(prev => ({ ...prev, error: 'שגיאה בהתחברות עם Google', loading: false }));
-    }
-  }, []);
-
-  const signOutUser = useCallback(async () => {
-    try {
-      await signOut(auth);
-    } catch {
-      setState(prev => ({ ...prev, error: 'שגיאה בהתנתקות' }));
-    }
-  }, []);
-
-  const refreshUser = useCallback(async () => {
-    if (state.firebaseUser) {
-      await fetchUserProfile(state.firebaseUser);
-    }
-  }, [state.firebaseUser, fetchUserProfile]);
+    return () => unsub();
+  }, [loadUser]);
 
   return {
-    ...state,
-    signIn,
-    signOut: signOutUser,
-    refreshUser,
+    firebaseUser: state.firebaseUser,
+    user: state.user,
+    loading: state.loading,
+    error: state.error,
     isAuthenticated: !!state.firebaseUser && !state.loading,
     needsOnboarding: state.user ? !state.user.onboarding_complete : false,
   };
