@@ -1,15 +1,15 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'placeholder-key',
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'placeholder.firebaseapp.com',
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'placeholder-project',
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 'placeholder-app-id',
+  apiKey: 'AIzaSyBywuW-9AiH0EHu16A_FMD1TIXONdxzpXY',
+  authDomain: 'smart-student-6bca3.firebaseapp.com',
+  projectId: 'smart-student-6bca3',
+  appId: '1:909867168788:web:a1cc486ad8e29e1226e301',
 };
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('https://www.googleapis.com/auth/classroom.courses.readonly');
 googleProvider.addScope('https://www.googleapis.com/auth/classroom.coursework.me.readonly');
-export { auth, googleProvider };
-export default app;
