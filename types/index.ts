@@ -61,6 +61,37 @@ export interface ClassroomData {
   summary: string;
 }
 
+export interface StudentFile {
+  id: string;
+  user_id: string;
+  filename: string;
+  file_type: string;
+  content?: string;
+  size_bytes: number;
+  conversation_id?: string;
+  created_at: string;
+}
+
+export interface ApiError {
+  error: string;
+  details?: string | object;
+  code?: string;
+}
+
+export interface ChatResponse {
+  reply: string;
+  conversationId: string;
+  agentUsed: string;
+  agentLabel: string;
+}
+
+export interface UploadResponse {
+  id: string;
+  filename: string;
+  size: number;
+  preview: string | null;
+}
+
 export type AuthState = 'loading' | 'authenticated' | 'unauthenticated';
 
 export interface ToastMessage {
